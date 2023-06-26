@@ -6,7 +6,7 @@ var scatterDensity:int
 var testScatterCount:int
 var threadCount:int
 var instancePort:int
-
+#WORK actual unit instead of unit type, liquidate prefferedUnit and inspector's propertyCache
 const GALLERY:Dictionary = {
 	"Mirror":{
 		"icon":preload("res://ComponentAssets/Mirror.png"),

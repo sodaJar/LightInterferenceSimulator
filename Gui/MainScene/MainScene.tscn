@@ -196,8 +196,8 @@ margin_bottom = 537.0
 hint_tooltip = "Precision of collision checking, increase this value if component sizes vary grealy"
 theme = ExtResource( 5 )
 bbcode_enabled = true
-bbcode_text = "Collision Test Size"
-text = "Collision Test Size"
+bbcode_text = "Collision Test Density"
+text = "Collision Test Density"
 fit_content_height = true
 scroll_active = false
 
