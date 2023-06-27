@@ -1,10 +1,10 @@
 *.orig
 *.class
 *.log
-.metadata/
-PhysServer/bin/
+.metadata/**
+PhysServer/bin/**
 PhysServer/.classpath
 PhysServer/.project
-PhysServer/.settings/
-PhysServer/.metadata/
-PhysServer/.settings/
+PhysServer/.settings/**
+PhysServer/.metadata/**
+PhysServer/.settings/**
