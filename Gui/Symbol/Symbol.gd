@@ -13,8 +13,11 @@ func _physics_process(_delta):
 	self_modulate.a = 1 if selected else 0.3
 
 func refresh():
-	position = Vector2(Lis.deunifyTo(component.properties.positionX[0].substr(1).to_float(),"mm"),-Lis.deunifyTo(component.properties.positionY[0].substr(1).to_float(),"mm"))
-	rotation = -component.properties.rotation[0].substr(1).to_float()
+	var posXArr = Lis.value2array(component.properties.positionX[0])
+	var posYArr = Lis.value2array(component.properties.positionY[0])
+	position = Vector2(Lis.changeUnit(Lis.parseValue(posXArr),posXArr[2],"mm"),\
+	-Lis.changeUnit(Lis.parseValue(posYArr),posYArr[2],"mm"))
+	rotation = deg2rad(-Lis.value2array(component.properties.rotation[0])[1].to_float())
 
 func deselect():
 	selected = false

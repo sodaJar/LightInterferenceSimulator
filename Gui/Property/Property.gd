@@ -12,18 +12,18 @@ onready var unitLabel:RichTextLabel = $UnitLabel
 
 export(String,"float","int","bool") var type = "float"
 var cNameUnique:String
-var unit:String
+var valueArr:Array #reflects the actual string value in Lis
+#var unit:String
 var propertyName:String = "samplePropertyName"
 var args:Dictionary = {
-	"min": -INF,
-	"max": INF,
-	"floatStep": 0.01,
-	"preferredDefaultUnit": "cm"
+	"min": "",
+	"max": "",
+	"floatStep": 0.01
 }
 
-var ready:bool = false
+var ignoreInputValueChange:bool = true
 
-const unitButtonIdxMap:Dictionary = {
+const unitButtonIdMap:Dictionary = {
 	"m":0,
 	"dm":1,
 	"cm":2,
@@ -31,12 +31,16 @@ const unitButtonIdxMap:Dictionary = {
 	"um":4,
 	"nm":5
 }
-var lastUnitButtonUnit:String = ""
+#var lastUnitButtonUnit:String = ""
 
 func _ready():
 	label.set_bbcode(propertyName.capitalize())
-	#configure unit
-	if unit == "default":
+
+func receiveValue(value:String):
+	ignoreInputValueChange = true
+	valueArr = Lis.value2array(value)
+	var unitIsDefault:bool = Lis.isUnitDefault(valueArr[2])
+	if unitIsDefault:
 		unitLabel.hide()
 		unitButton.add_item("m",0)
 		unitButton.add_item("dm",1)
@@ -47,74 +51,67 @@ func _ready():
 		unitButton.show()
 	else:
 		unitButton.hide()
-		unitLabel.set_bbcode(unit)
+		unitLabel.set_bbcode(valueArr[2].capitalize())
 		unitLabel.show()
-	
-	if type in ["i","f"]:
+
+	if valueArr[0] in ["i","f"]:
 		valueInputBool.hide()
 		valueInputNum.show()
-		if unit == "default":
-			unitButton.select(unitButtonIdxMap[args.preferredDefaultUnit])
-			var cache:Dictionary = Lis.getNode("inspector").propertyCache
-			if cache.has(cNameUnique) && cache[cNameUnique].has(propertyName):
-				unitButton.select(unitButtonIdxMap[cache[cNameUnique][propertyName]])
-		
-		if !is_inf(args.min):
-			valueInputNum.min_value = Lis.deunifyTo(args.min,getUnit())
-			valueInputNum.allow_lesser = false
-		if !is_inf(args.max):
-			valueInputNum.max_value = Lis.deunifyTo(args.max,getUnit())
-			valueInputNum.allow_greater = false
-	
-	match type:
+		if unitIsDefault: unitButton.select(unitButton.get_item_index(unitButtonIdMap[valueArr[2]]))
+		updateInputNumMin(valueArr[2])
+		updateInputNumMax(valueArr[2])
+
+	match valueArr[0]:
 		"f":
 			valueInputNum.step = args.floatStep
+			valueInputNum.value = float(valueArr[1])
 		"i":
 			valueInputNum.step = 1
+			valueInputNum.value = int(valueArr[1])
 		"b":
+			valueInputBool.pressed = valueArr[1] == "True"
 			valueInputNum.hide()
 			valueInputBool = $ValueBool
 			valueInputBool.show()
 			unitButton.hide()
 			unitLabel.hide()
-	ready = true
+#	lastUnitButtonUnit = getUnit()
+	ignoreInputValueChange = false
 
-func receiveValue(value:String):
-	assert(value.substr(0,1) == type,"Type mismatch for "+cNameUnique+": "+value+" is not of type "+type)
-	match type:
-		"f":
-			valueInputNum.value = Lis.deunifyTo(value.substr(1).to_float(),getUnit())
-		"i":
-			valueInputNum.value = Lis.deunifyTo(value.substr(1).to_int(),getUnit())
-		"b": valueInputBool.pressed = value.substr(1)=="true"
+#updates min and max based on valueArr
+func updateInputNumMin(newUnit:String):
+	if args.min == "": return
+	var minValArr:Array = Lis.value2array(args.min)
+	var unified = Lis.unifyFrom(Lis.parseValue(minValArr),minValArr[2])
+	valueInputNum.min_value = max(Lis.deunifyTo(unified,newUnit),args.floatStep)
+	valueInputNum.allow_lesser = false
+func updateInputNumMax(newUnit:String):
+	if args.max == "": return
+	var maxValArr = Lis.value2array(args.max)
+	var unified = Lis.unifyFrom(Lis.parseValue(maxValArr),maxValArr[2])
+	valueInputNum.max_value = Lis.deunifyTo(unified,newUnit)
+	valueInputNum.allow_greater = false
 
 func getUnit() -> String:
-	if unit == "degrees": return "deg"
-	if unit == "%": return unit
-	if unit != "default": return ""
-	if unitButton.get_item_id(unitButton.selected)==unitButtonIdxMap["um"]: return "um"
+	if !Lis.isUnitDefault(valueArr[2]): return valueArr[2]
+	if unitButton.get_item_id(unitButton.selected)==unitButtonIdMap["um"]: return "um"
 	return unitButton.get_item_text(unitButton.selected)
 
-
 func _on_UnitOptionButton_item_selected(index):
-	var newUnit:String = getUnit()
-	valueInputNum.min_value = Lis.deunifyTo(Lis.unifyFrom(valueInputNum.min_value,lastUnitButtonUnit),newUnit)
-	valueInputNum.max_value = Lis.deunifyTo(Lis.unifyFrom(valueInputNum.max_value,lastUnitButtonUnit),newUnit)
+	updateInputNumMin(getUnit())
+	updateInputNumMax(getUnit())
 	_on_ValueNum_value_changed(null)
-	var cache:Dictionary = Lis.getNode("inspector").propertyCache
-	cache[cNameUnique][propertyName] = newUnit
-	lastUnitButtonUnit = newUnit
-
 
 func _on_ValueNum_value_changed(value):
-	if !ready: return
+	if ignoreInputValueChange: return
 	match type:
 		"f":
-			Lis.components[cNameUnique].properties[propertyName][0] = "f"+Lis.float2stringPrecise(Lis.unifyFrom(valueInputNum.value,getUnit()))
+			Lis.components[cNameUnique].properties[propertyName][0] = "f"+Lis.float2stringPrecise(valueInputNum.value)+":"+getUnit()
 			Lis.getNode("mainScene").updateSymbol(cNameUnique)
 		"i":
-			Lis.components[cNameUnique].properties[propertyName][0] = "i"+str(Lis.unifyFrom(valueInputNum.value,getUnit()))
+			Lis.components[cNameUnique].properties[propertyName][0] = "i"+str(int(round(valueInputNum.value)))+":"+getUnit()
 			Lis.getNode("mainScene").updateSymbol(cNameUnique)
 		"b":
-			Lis.components[cNameUnique].properties[propertyName][0] = "b"+str(valueInputBool.pressed)
+			Lis.components[cNameUnique].properties[propertyName][0] = "b"+str(valueInputBool.pressed)+":none"
 			Lis.getNode("mainScene").updateSymbol(cNameUnique)
+	valueArr = Lis.value2array(Lis.components[cNameUnique].properties[propertyName][0])

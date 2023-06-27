@@ -12,14 +12,14 @@ const GALLERY:Dictionary = {
 		"icon":preload("res://ComponentAssets/Mirror.png"),
 		"description":"A perfectly reflective mirror of negligible thickness\n-Slab width- is the length of the component",
 		"properties":{
-			"slabWidth":["f0.05","default",{"min":0.01}]
+			"slabWidth":["f5:cm",{"min":"f1:cm"}]
 		}
 	},
 	"BeamSplitter":{
 		"icon":preload("res://ComponentAssets/BeamSplitter.png"),
 		"description":"A beam splitter of negligible thickness\n-Slab width- is the length of the component",
 		"properties":{
-			"slabWidth":["f0.1","default",{"min":0.01}]
+			"slabWidth":["f10:cm",{"min":"f1:cm"}]
 		}
 	},
 	"SingleSlit":{
@@ -29,8 +29,8 @@ const GALLERY:Dictionary = {
 		"The obstacle has negligible thickness and absorbs all light. If -slit width- if greater than "+\
 		"obstacle width, the component is ignored",
 		"properties":{
-			"obstacleWidth":["f1","default",{"min":0.1}],
-			"slitWidth":["f5000e-9","default",{"min":1e-9,"preferredDefaultUnit":"nm"}]
+			"obstacleWidth":["f1:m",{"min":"f10:cm"}],
+			"slitWidth":["f5000:nm",{"min":"f1:nm"}]
 		}
 	},
 	"Screen": {
@@ -41,8 +41,8 @@ const GALLERY:Dictionary = {
 		"Increase this value if the result appears too rough or chaotic"+\
 		"\n-Quality- of the screen does not matter",
 		"properties": {
-			"screenWidth":["f0.3","default"], #units always normalized in Lis.gd
-			"resolution":["i100","points",{"min":50}]
+			"screenWidth":["f10:cm",{"min":"f1:mm"}],
+			"resolution":["i100:points",{"min":"i50:points"}]
 		},
 	},
 	"Laser": {
@@ -51,25 +51,13 @@ const GALLERY:Dictionary = {
 		"-Power- relates to the intensity observed and does not have a real unit"+\
 		"-Beam width- is the width where the intensity is 1/e^2 (around 13.5%) of the maximum intensity",
 		"properties": {
-			"beamWidth":["f0.002","default",{"min":10e-6,"max":0.001}],
-			"power":["f1","%",{"min":0.01}]
+			"beamWidth":["f100:um",{"min":"f10:um","max":"f1:mm"}],
+			"power":["f100:%",{"min":"f1:%"}]
 		}
 	}
 }
 
-const unitMap = {
-	"": 1,
-	"%": 0.01,
-	"rad": 1,
-	"deg": PI/180,
-	"m": 1,
-	"dm": 1e-1,
-	"cm": 1e-2,
-	"mm": 1e-3,
-	"um": 1e-6,
-	"nm": 1e-9,
-}
-
+#format data for physics server, convert all units to SI units (unify)
 func getDataArray() -> Array:
 	var r:Array = []
 	r.append_array(["f"+str(wavelength),"i"+str(scatterDensity),
@@ -80,15 +68,41 @@ func getDataArray() -> Array:
 		var props:String = ""
 		for pName in c.properties:
 			var p = c.properties[pName]
-			props += pName+" "+p[0]+";"
+			var valArr:Array = value2array(p[0])
+			var val = parseValue(valArr)
+			props += pName+" "+valArr[0]+( str(val) if (val is bool||val is int) else float2stringPrecise(unifyFrom(val,valArr[2])) )+";"
 		r.append(props)
 	return r
 
+const unitMap = {
+	"": 1,
+	"%": 0.01,
+	"radians": 1,
+	"degrees": PI/180,
+	"m": 1,
+	"dm": 1e-1,
+	"cm": 1e-2,
+	"mm": 1e-3,
+	"um": 1e-6,
+	"nm": 1e-9,
+}
+
+func isUnitDefault(unit:String)->bool: return unit in ["m","dm","cm","mm","um","nm"]
+func value2array(value:String) -> Array:
+	var seperatorIndex:int = value.find(":")
+	assert(seperatorIndex>0)
+	return [value.substr(0,1),value.substr(1,seperatorIndex-1),value.substr(seperatorIndex+1)]
+func parseValue(valueArr:Array):
+	match valueArr[0]:
+		"f": return float(valueArr[1])
+		"i": return int(valueArr[1])
+		"b": return valueArr[1] == "True"
 func getNode(group:String)->Node: return get_tree().get_nodes_in_group(group)[0]
 func getNodes(group:String)->Array: return get_tree().get_nodes_in_group(group)
-func deunifyTo(u:float,unit:String)->float: return u/unitMap[unit]
-func unifyFrom(n:float,unit:String)->float: return n*unitMap[unit]
-func float2stringPrecise(f:float)->String: return "%.32f" % f
+func deunifyTo(u:float,unit:String)->float: return u/unitMap[unit if unitMap.has(unit) else ""]
+func unifyFrom(n:float,unit:String)->float: return n*unitMap[unit if unitMap.has(unit) else ""]
+func changeUnit(n:float,oldUnit:String,newUnit:String)->float: return deunifyTo(unifyFrom(n,oldUnit),newUnit)
+func float2stringPrecise(f:float)->String: return "%.64f" % f
 
 var components:Dictionary = {}
 var naturalOffset:float = 0
@@ -110,11 +124,11 @@ func addNewComponent(cName:String, oldComponent:Dictionary={}) -> Dictionary:
 	c["name"] = cName
 	c["nameUnique"] = cNameUnique
 	if oldComponent.empty():
-		c.properties["positionX"] = ["f"+str(naturalOffset),"default"] #natural offset
+		c.properties["positionX"] = ["f"+str(naturalOffset)+":cm",{}] #natural offset
 		naturalOffset += 0.005
-		c.properties["positionY"] = ["f0","default"]
-		c.properties["rotation"] = ["f0","degrees"]
-		c.properties["quality"] = ["f1","%",{"floatStep":1}]
+		c.properties["positionY"] = ["f0:cm",{}]
+		c.properties["rotation"] = ["f0:degrees",{}]
+		c.properties["quality"] = ["f100:%",{"min":"f10:%","floatStep":1}]
 	else:
 		for key in oldComponent.properties:
 			c.properties[key] = oldComponent.properties[key].duplicate()
@@ -128,9 +142,7 @@ func deleteComponent(cNameUnique:String):
 	getNode("mainScene").componentsPm.deleteComponent(cNameUnique)
 	getNode("mainScene").deleteSymbol(cNameUnique)
 	components.erase(cNameUnique)
-	assert(components.has("Screen"))
-	getNode("inspector").inspect("Screen")
-	getNode("inspector").propertyCache.erase(cNameUnique)
+	if components.has("Screen"): getNode("inspector").inspect("Screen")
 
 const SAVE_PATH:String = "user://data/"#"./data/"
 const DEFAULT_FILE_NAME:String = "save.tres"
@@ -147,4 +159,5 @@ func saveDataAbs(data:Dictionary,path:String) -> int:
 func loadDataAbs(path:String):
 	var resource = ResourceLoader.load(path)
 	if !is_instance_valid(resource): return null
+	if !("data" in resource): return null
 	return resource.data

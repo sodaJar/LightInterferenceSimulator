@@ -24,10 +24,8 @@ func _on_LoadButton_button_up():
 
 func _on_SaveLoadFileDialog_file_selected(path):
 	var camera:Camera2D = Lis.getNode("camera")
-	var inspector:Node2D = Lis.getNode("inspector")
 	if mode==MODE_SAVE_FILE:
 		Lis.saveDataAbs({
-			"inspectorPropertyCache":inspector.propertyCache,
 			"camPos":camera.global_position,
 			"camZoom":camera.zoom,
 			"w":Lis.wavelength,
@@ -40,7 +38,6 @@ func _on_SaveLoadFileDialog_file_selected(path):
 	else:
 		var data = Lis.loadDataAbs(path)
 		if data == null: return
-		inspector.propertyCache = data.inspectorPropertyCache
 		camera.global_position = data.camPos
 		camera.zoom = data.camZoom
 		Lis.wavelength = data.w

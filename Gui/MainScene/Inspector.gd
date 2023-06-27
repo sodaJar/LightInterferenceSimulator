@@ -7,19 +7,19 @@ onready var descLabel:RichTextLabel = $DescriptionLabel
 
 var component:Dictionary
 
-var propertyCache:Dictionary = {
-	
-}
+#var propertyCache:Dictionary = {}
 
 func inspect(cNameUnique:String):
 	var c:Dictionary = Lis.components[cNameUnique]
-	if !propertyCache.has(cNameUnique): propertyCache[cNameUnique] = {}
+#	if !propertyCache.has(cNameUnique): propertyCache[cNameUnique] = {}
 	deleteButton.disabled = cNameUnique == "Screen"
 	Lis.getNode("mainScene").selectSymbol(cNameUnique)
 	titleLabel.set_bbcode("[center]Inspector ("+cNameUnique.capitalize()+")")
 	descLabel.set_bbcode(c.description)
+	#delete previous properties
 	for prop in control.get_children(): prop.queue_free()
 	var posY = 0
+	#create all properties
 	for key in c.properties:
 		var p:Node2D
 		var val = c.properties[key]
@@ -27,12 +27,11 @@ func inspect(cNameUnique:String):
 		p.cNameUnique = cNameUnique
 		p.type = val[0].substr(0,1)
 		p.propertyName = key
-		p.unit = val[1]
+#		p.unit = val[1]
 		#load in args
-		if len(val)>2:
-			for k in val[2]:
-				assert(p.args.has(k))
-				p.args[k] = val[2][k]
+		for k in val[1]:
+			assert(p.args.has(k))
+			p.args[k] = val[1][k]
 		control.add_child(p)
 		p.receiveValue(val[0])
 		p.position.y = posY
