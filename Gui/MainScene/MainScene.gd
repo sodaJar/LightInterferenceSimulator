@@ -8,8 +8,6 @@ onready var runButton:Button = $Ui/RunButton
 
 var dragging:bool = false
 
-#WORK save & load | ADDITION: lauch button cd
-
 func _unhandled_input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT: dragging = event.pressed

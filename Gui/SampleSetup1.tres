@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource( 1 )
 data = {
-"camPos": Vector2( 218.613, 95.816 ),
-"camZoom": Vector2( 1.85501, 1.85501 ),
+"camPos": Vector2( 259.635, -102.588 ),
+"camZoom": Vector2( 2.38829, 2.38829 ),
 "components": {
 "BeamSplitter1": {
 "description": "A beam splitter of negligible thickness
@@ -61,7 +61,7 @@ data = {
 "properties": {
 "positionX": [ "f0.0000000000000000000000000000000000000000000000000000000000000000:cm", {
 } ],
-"positionY": [ "f300000162.5000000000000000000000000000000000000000000000000000000000000000:nm", {
+"positionY": [ "f430000162.5000000000000000000000000000000000000000000000000000000000000000:nm", {
 } ],
 "quality": [ "f100:%", {
 "floatStep": 1,
@@ -122,7 +122,7 @@ data = {
 }
 },
 "i": 9053,
-"s": 10,
+"s": 15,
 "t": 20,
 "th": 30,
 "w": 650.0
