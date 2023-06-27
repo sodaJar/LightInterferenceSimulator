@@ -1,1 +1,5 @@
 *.class
+*.log
+.classpath
+.project
+.settings/
