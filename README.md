@@ -1,4 +1,3 @@
-==============================================================
 Light Interference Simulator User Manual
 ==============================================================
 
@@ -41,6 +40,6 @@ resolution devided by the thread count
 Instance port - Mechanism used for preventing concurrent
 calculations, generally does not need to be changed
 
-==============================================================
+--------------------------------------------------------------
+
 IBDP Computer Science Internal Assessment
-==============================================================
