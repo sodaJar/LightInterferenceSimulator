@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import javax.swing.JComponent;
@@ -74,32 +76,22 @@ public class Main {
 		//args format:
 		//[wavelength, scatterCount, testScatterCount, threadCount, instancePort, <component 1 name>, <property1> <value1>;<property2> <value2>;..., <c 2 name>, <p1> <v1>;, ...]
 		//the first character of a value string indicates its type: f -> double, i -> int, b -> boolean
-//		args = new String[] {"f650", "i3", "i100", "i20", "i9053", "Laser","beamWidth f0.002;power f1;positionX f0;positionY f0.4;quality f1;rotation f"+Math.PI+";", "Screen", "screenWidth f0.3;resolution i100;positionX f0;positionY f0;quality f1;rotation f0;", "SingleSlit", "obstacleWidth f1;slitWidth f0.000005;positionX f0;positionY f0.2;quality f1;rotation f0;"};
-//		if (args.length<7) { return; }
-		if (args.length<7) {
+//		args = new String[] {"f650", "i10", "i30", "i20", "i9053", "Laser","beamWidth f0.0001;power f1;positionX f0;positionY f0.4;quality f1;rotation f3.14159265358979;", "Screen", "screenWidth f0.2;resolution i100;positionX f0;positionY f0;quality f1;rotation f0;", "SingleSlit", "obstacleWidth f1;slitWidth f0.000005;positionX f0;positionY f0.2;quality f1;rotation f0;"};
+		if (args.length<7) { //when the physics server starts directly
 			Environment env = new Environment();
-			
-			String option = JOptionPane.showInputDialog("PRESET\ns - SETUP\n0 - MULTI SLIT\nx - GLASS SLAB\n");
+			String option = JOptionPane.showInputDialog("PRESET\n0 - LASER\n1 - MULTI SLIT\n2 - GLASS SLAB EDGE\n");
 			if (option==null || option.isBlank()) { return; }
-			
 			switch(option){
-				case "s":
+				case "0":
 					Setup setup = new Setup();
-					setup.addComponent("Screen", new String[] {"position","angle","screenWidth","resolution","quality"}, new Object[] {new Vec(0,0),0,0.1,150,1});
-					setup.addComponent("Laser", new String[] {"position","angle","beamWidth","power","quality"}, new Object[] {new Vec(0,10),Math.PI,Lis.mm2m(2),1,100});
-//					
-//					setup.addComponent("Screen", new String[] {"position","angle","screenWidth","resolution","quality"}, new Object[] {new Vec(0,0),-Lis.PI_BY_TWO,0.2,300,1});
-//					setup.addComponent("Laser", new String[] {"position","angle","beamWidth","power","quality"}, new Object[] {new Vec(0.2,0),Lis.PI_BY_TWO,Lis.mm2m(2),1000,10});
-//					
-//					setup.addComponent("Screen", new String[] {"position","angle","screenWidth","resolution","quality"}, new Object[] {new Vec(0,0),-Lis.PI_BY_TWO,0.2,150,1});
-//					setup.addComponent("SingleSlit", new String[] {"position","angle","obstacleWidth","slitWidth","quality"}, new Object[] {new Vec(0.2,0),Lis.PI_BY_TWO,0.2,Lis.nm2m(5000),1});
-//					setup.addComponent("Laser", new String[] {"position","angle","beamWidth","power","quality"}, new Object[] {new Vec(0.4,0),Lis.PI_BY_TWO,Lis.mm2m(2),1,1});
+					setup.addComponent("Screen", Map.ofEntries(Map.entry("position",new Vec(0)),Map.entry("angle",0),Map.entry("screenWidth",0.1),Map.entry("resolution",150),Map.entry("quality",1)));
+					setup.addComponent("Laser", Map.ofEntries(Map.entry("position",new Vec(0,1)),Map.entry("angle",Math.PI),Map.entry("beamWidth",Lis.mm2m(0.1)),Map.entry("power",1),Map.entry("quality",1)));
 					long startTime = System.nanoTime();
 					setup.run();
 					long endTime = System.nanoTime();
 					System.out.println((endTime-startTime)/1000000000.0+"s");
 					return;
-				case "0":
+				case "1":
 					final int nSlits = Integer.parseInt(JOptionPane.showInputDialog("NUMBER OF SLITS"));
 					if (nSlits <= 0) return; 
 					for (int i = -450-(int)Math.pow(2,-nSlits/10+5)*50; i < 450+(int)Math.pow(2,-nSlits/10+5)*50; i++) {
@@ -112,7 +104,7 @@ public class Main {
 					}
 					env.run();
 					break;
-				case "x": //GLASS SLAB
+				case "2": //GLASS SLAB
 					final double s = 0.001/1000;
 					for (int i = -1000; i < 1000; i++) {
 						env.addObserver(0.05,i*0.0000005);
@@ -156,8 +148,7 @@ public class Main {
 			
 			for (int idx = 5; idx < args.length; idx += 2) { //go through every component to be added
 				String component = args[idx];
-				ArrayList<String> properties = new ArrayList<String>();
-				ArrayList<Object> values = new ArrayList<Object>();
+				HashMap<String,Object> properties = new HashMap<String,Object>();
 				String propVal = args[idx+1];
 				Vec cPosition = new Vec(); //because the GUI doesn't take the vector data type, positionX and positionY need to be joined manually to form position
 				while(true) { //get the properties and corresponding values of the component, being careful of special properties whose formats are unusual
@@ -175,12 +166,11 @@ public class Main {
 						continue;
 					}
 					if (property.equals("rotation")) { property = "angle"; } //this property is called "rotation" in the GUI, but "angle" in this physics server
-					values.add(value);
-					properties.add(property);
+					properties.put(property, value);
+					println(property+" "+value);
 				}
-				properties.add("position");
-				values.add(cPosition);
-				setup.addComponent(component, properties.toArray(new String[0]), values.toArray()); //add the component, their properties, and their values to the setup
+				properties.put("position", cPosition);
+				setup.addComponent(component, properties); //add the component, their properties, and their values to the setup
 			}
 			long startTime = System.nanoTime();
 			setup.run();

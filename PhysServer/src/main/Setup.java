@@ -1,6 +1,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
@@ -100,18 +101,15 @@ public class Setup {
 		Main.displayGraph(displacements, observations);
 	}
 
-	public void addComponent(String componentName, String[] properties, Object[] values) {
+	public void addComponent(String componentName, Map<String,Object> properties) {
 		Component component = null;
 		//instance the component from string name
 		try { component = (Component)Class.forName("components.C_"+componentName).getConstructor().newInstance(); }
 		catch (Exception e) { Main.quitWithMessage("Component <"+componentName+"> could not be instanced\n"+e.toString()); }
 		//set properties
-		for (int i = 0; i < properties.length; i++) {
-			try { component.getClass().getField(properties[i]).set(component, values[i]); }
-			catch (Exception e) {
-				if (values.length != properties.length) { Main.quitWithMessage("Property[] size value[] size mismatch"); }
-				else { Main.quitWithMessage("Property <"+properties[i]+"> cannot be set for component <"+componentName+">\n"+e.toString()); }
-			}
+		for (Map.Entry<String,Object> entry : properties.entrySet()) {
+			try { component.getClass().getField(entry.getKey()).set(component, entry.getValue()); }
+			catch (Exception e) { Main.quitWithMessage("Property <"+entry.getKey()+"> could not be set for component <"+componentName+">\n"+e.toString()); }
 		}
 		component.angle = Lis.normalizeAngle(component.angle); //this is needed for other procedures
 		if (component instanceof C_Screen) { screen = (C_Screen)component; }
@@ -124,9 +122,6 @@ public class Setup {
 			hb.pos2.add(component.position);
 		}
 	}
-	
-//	public void addToNextRetracers(Retracer r) { nextRetracers.add(r); }
-//	public void addToRetracersOnSource(Retracer r) { retracersOnSource.add(r); }
 }
 
 
