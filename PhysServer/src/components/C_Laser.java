@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import environment.Retracer;
 import main.Lis;
-import main.Main;
 
 public class C_Laser extends Component{
 	

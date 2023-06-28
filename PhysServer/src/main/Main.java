@@ -102,12 +102,12 @@ public class Main {
 				case "0":
 					final int nSlits = Integer.parseInt(JOptionPane.showInputDialog("NUMBER OF SLITS"));
 					if (nSlits <= 0) return; 
-					for (int i = -400-(int)Math.pow(2,-nSlits+5)*100; i < 400+(int)Math.pow(2,-nSlits+5)*100; i++) {
+					for (int i = -450-(int)Math.pow(2,-nSlits/10+5)*50; i < 450+(int)Math.pow(2,-nSlits/10+5)*50; i++) {
 						env.addObserver(0.5,i*0.0001);
 					}
 					for (int i = -nSlits/2; i < nSlits-nSlits/2; i++) {
 						for (int j = -300; j < 300; j++) {
-							env.addSource(0,(nSlits%2!=0?i:(i+0.5))*Lis.wavelength*12+(j+0.5)*Lis.wavelength*10);
+							env.addSource(0,(nSlits%2!=0?i:(i+0.5))*Lis.wavelength*12+(j+0.5)*Lis.wavelength/100);
 						}
 					}
 					env.run();
