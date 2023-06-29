@@ -3,6 +3,8 @@ package environment;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import javax.swing.JOptionPane;
+
 import components.C_SingleSlit;
 import components.Component;
 import components.HitboxSegment;
@@ -40,7 +42,6 @@ public class Retracer extends Ray {
 			/*
 			 * The main idea is to get a list of hitboxes fully or partially exposed to the scattering retracer and then process them
 			 * to keep parts that is directly exposed to the retracer and the intersection points simply become each point on those parts.
-			 * This algorithm replaced the older extremely inefficient one where rays spreading in all directions were tested one by one
 			 */
 			//the set of master hitbox objects to check for duplicates (each puppet is unique even if they represent the same hitbox)
 			HashSet<HitboxSegment> masters = new HashSet<HitboxSegment>();
@@ -50,66 +51,61 @@ public class Retracer extends Ray {
 			for (Component component : setup.components) {
 				if (component == ignoreComponent) { continue; }
 				for (HitboxSegment hitbox : component.hitboxes) {
-					if (Math.abs(Lis.fromAngleToAngle(position.to(hitbox.pos1).angle(),angle))>Lis.PI_BY_TWO*0.95 && Math.abs(Lis.fromAngleToAngle(position.to(hitbox.pos2).angle(),angle))>Lis.PI_BY_TWO*0.95) {
+					if (Math.abs(Lis.fromAngleToAngle(position.to(hitbox.pos1).angle(),angle))>Lis.PI_BY_TWO*0.9 && Math.abs(Lis.fromAngleToAngle(position.to(hitbox.pos2).angle(),angle))>Lis.PI_BY_TWO*0.9) {
 						continue;
 					}
-//					Main.println("CHECK HB "+hitbox.owner.toString()+" "+hitbox.owner.hitboxes.indexOf(hitbox));
 					Vec s = hitbox.getDirVec().dividedBy(Lis.collisionTestSize);
-					Vec posOnHitbox = hitbox.pos1.clone();
-					
+					Vec posOnHitbox = hitbox.pos1.clone(); //this vector is incremented to cover each point on the hitbox
 					for(int i = 0; i < Lis.collisionTestSize; i++) { //for every point on hitbox
 						Vec testVec = position.to(posOnHitbox); //test if this path is not blocked by any hitbox
 						boolean clear = true;
-//						if (component instanceof C_SingleSlit && hitbox.owner.hitboxes.indexOf(hitbox) == 1) Main.println("test vec: "+testVec.toString());
-//						if (component instanceof C_SingleSlit && hitbox.owner.hitboxes.indexOf(hitbox) == 1) {
-//							Main.println("test for "+hitbox.toString()+" of "+hitbox.owner.toString());
-//						}
 						cLoop: for (Component c : setup.components) { //check if any other hitbox is between this one and the retracer
 							if (c == ignoreComponent) { continue; }
 							for (HitboxSegment hb : c.hitboxes) {
 								if (hb == hitbox) { continue; }
-//								Main.println("get intersection"+position.toString() + testVec.toString() + hb.pos1.toString() + hb.getDirVec().toString());
 								Vec intersection = Lis.getIntersection(position, testVec, hb.pos1, hb.getDirVec(), Lis.LINE_TYPE.SEGMENT, Lis.LINE_TYPE.SEGMENT);
-								if (intersection == null) { continue; }
-								//if the hitbox can connect to the retracer
-								clear = false;
-								break cLoop;
+								if (intersection != null) { //if the ray is blocked by something, move on to the next ray
+									clear = false;
+									break cLoop;	
+								}
 							}
 						}
-						if (clear) {
+						if (clear) { //if there is at least one ray that can reach the hitbox, then the hitbox is exposed to the retracer 
 							//make sure that pos1 is always at a smaller angle than pos2; adds to the array of hitboxes; component angle is assumed to be [-PI,PI]
 							if (Lis.fromNormAngleToNormAngle(position.to(hitbox.pos1).angle(),position.to(hitbox.pos2).angle()) < 0) { hitbox.pos1.swapWith(hitbox.pos2); }
 							if (masters.add(hitbox)) { puppets.add(hitbox.newPuppet()); }
 							break;
 						}
-						
 						posOnHitbox.add(s); //move to next point on hitbox
 					}
 				}
 			}
 			
-			//deal with cases where some hitboxes are overlapping with other hitboxes
-			//hitboxes are assumed to be non-intersecting
-			//a set of extra puppets produced when one is partially covered by an "island" hitbox in front
+			/*
+			 * This part resolves cases where some hitboxes are overlapping with other hitboxes
+			 * by changing the pos1(one end of the segment) or pos2(the second end) or both to make sure
+			 * that no two puppet hitboxes overlap
+			 */
+			//note: hitboxes are assumed to be non-intersecting
+			//extra puppet hitboxes are produced when one is partially covered by an "island" hitbox in front
 			HashSet<HitboxSegmentPuppet> extraPuppets = new HashSet<HitboxSegmentPuppet>();
 			for (HitboxSegmentPuppet hitbox : puppets) {
 				for (HitboxSegmentPuppet withHitbox : puppets) {
-					if (hitbox == withHitbox) { continue; }
+					if (hitbox == withHitbox) { continue; } //don't check with one self
 					Vec intersection1 = Lis.getIntersection(position, position.to(hitbox.pos1), withHitbox.pos1, withHitbox.getDirVec(), Lis.LINE_TYPE.RAY, Lis.LINE_TYPE.SEGMENT);
 					Vec intersection2 = Lis.getIntersection(position, position.to(hitbox.pos2), withHitbox.pos1, withHitbox.getDirVec(), Lis.LINE_TYPE.RAY, Lis.LINE_TYPE.SEGMENT);
-					if (intersection1==null && intersection2==null) { continue; } //sth wrong with this, but its prbly ok
-					boolean pos1Covering = (intersection1 == null)?false:(position.distanceSquaredTo(intersection1)>position.distanceSquaredTo(hitbox.pos1));
-					boolean pos2Covering = (intersection2 == null)?false:(position.distanceSquaredTo(intersection2)>position.distanceSquaredTo(hitbox.pos2));
-					if (intersection1 != null && intersection2 != null && pos1Covering && pos2Covering) { //if the hitbox is covering a middle part of another hitbox
-						HitboxSegmentPuppet extraHitbox = withHitbox.clone();
+					if (intersection1==null && intersection2==null) { continue; } //if the hitbox doesn't overlap with any other hitbox, don't modify anything
+					//then, either pos1 or pos2 is covering another hitbox
+					boolean pos1Covering = (intersection1 == null) ? false : (position.distanceSquaredTo(intersection1)>position.distanceSquaredTo(hitbox.pos1));
+					boolean pos2Covering = (intersection2 == null) ? false : (position.distanceSquaredTo(intersection2)>position.distanceSquaredTo(hitbox.pos2));
+					if (pos1Covering && pos2Covering) { //if the hitbox is covering a middle part of another hitbox
+						HitboxSegmentPuppet extraHitbox = withHitbox.clone(); //produce an extra puppet because the original has a gap in the middle
 						withHitbox.pos2.set(intersection1);
 						extraHitbox.pos1.set(intersection2);
 						extraPuppets.add(extraHitbox);
-					}else if(intersection1 != null && pos1Covering) { //pos1 covers another hitbox
-						withHitbox.pos2.set(intersection1);
-					//pos2 covers another hitbox; if intersection1 is null, intersection2 must be valid
-					//if pos1Covering is false, pos2Covering must be false as hitboxes don't intersect; so the below check is sufficient
-					}else if(pos2Covering) { withHitbox.pos1.set(intersection2); }
+					}else if(pos1Covering) { withHitbox.pos2.set(intersection1); } //pos1 covers another hitbox
+					else if(pos2Covering) { withHitbox.pos1.set(intersection2); } //pos2 covers another hitbox
+					//else would imply that the hitbox is being covered by another, in which case we don't need to do anything
 				}
 			}
 			puppets.addAll(extraPuppets);
@@ -117,37 +113,35 @@ public class Retracer extends Ray {
 			//test rays towards each hitbox
 			for(HitboxSegmentPuppet hb : puppets) {
 				if (!hb.responsive) { continue; }
-//				Main.println("hb "+hb.pos1.toString()+" "+hb.pos2.toString());
 				double a1 = position.to(hb.pos1).angle();
 				double a2 = position.to(hb.pos2).angle();
 				boolean pos1Behind = Math.abs(Lis.fromAngleToAngle(angle, a1))>Lis.PI_BY_TWO; //pos1 is invalid as it's behind the retracer
 				boolean pos2Behind = Math.abs(Lis.fromAngleToAngle(angle, a2))>Lis.PI_BY_TWO; //pos2 is invalid as it's behind the retracer
 				if (pos1Behind) { a1 = Lis.normalizeAngleShallow(angle-Lis.PI_BY_TWO); }
 				else if (pos2Behind) { a2 = Lis.normalizeAngleShallow(angle+Lis.PI_BY_TWO); }
-				double delta = Lis.fromNormAngleToNormAngle(a1, a2);
-				if (delta<-1e-10) Main.println("delta: "+Lis.r2d(delta)+" a1: "+Lis.r2d(a1)+" a2: "+Lis.r2d(a2));
+				double delta = Lis.fromNormAngleToNormAngle(a1, a2); //delta must be positive
+				if (delta <= -1e-10) { //this occurs under certain abnormal conditions (E.g. when the length of a hitbox is 0)
+					Main.println("NEGATIVE DELTA WARNING\nFrom "+position+" a1: "+Lis.r2d(a1)+" a2: "+Lis.r2d(a2)+" pos1: "+hb.pos1.toString()+" pos2: "+hb.pos2.toString());
+					continue; //continue since this may cause trouble
+				}
 				if (!Lis.nearEqual(delta)) {
-//					double s = (Math.PI/Lis.scatterDensity); //angular spacing fixed angle
-//					int sc = (int)Math.abs(delta/s);
-//					double s = delta/(Lis.scatterCount-1); //angular spacing fixed count
 					int scCount = (int)(Lis.scatterCount*hb.owner.quality*hb.owner.innateQuality);
-					double s = delta/(scCount-1); //angular spacing fixed count for specific hitbox
-					for (int scIdx = 0; scIdx < scCount/*or Lis.scatterCount or sc*/; scIdx++) { //test each ray
+					double s = delta/(scCount-1); //angular spacing fixed scatter count for specific hitbox
+					for (int scIdx = 0; scIdx < scCount; scIdx++) { //retrace each ray
 						Retracer nextR = clone();
 //						double rayAngle = a1+(((double)scIdx)/(Lis.scatterCount-1))*delta;
 						double rayAngle = Lis.normalizeAngleShallow(a1+((double)scIdx)*s);
-//						Main.println("ray angle "+Lis.r2d(rayAngle));
+//						//since we know for sure all rays are concentrated on the hitbox, and they must intersect, a line intersection check is enough
 						Vec intersection = Lis.getLineIntersection(position, Vec.newVecModArg(1, rayAngle), hb.pos1, hb.getDirVec());
 						if (intersection == null) { continue; }
 						//assume component at Vec(0) and angle 0, normalize incoming ray
 						nextR.distanceTravelled += position.distanceTo(intersection);
-						nextR.position = intersection.clone(); //DEBUGGED
+						nextR.position = intersection.clone();
 						nextR.position.subtract(hb.owner.position);
 						nextR.position.rotate(-hb.owner.angle);
 						nextR.angle = Lis.normalizeAngle(rayAngle - hb.owner.angle); //each scattered ray has a different angle
 						nextR.scattering = false; //scattering by default false
-						nextR.energyPercentage /= scCount;//Lis.scatterCount;//Lis.scatterDensity;// 
-//						if (hb.owner instanceof C_Laser) Main.println("input "+nextR.position.toString()); //DEBUG
+						nextR.energyPercentage /= scCount;
 						ArrayList<Retracer> results = new ArrayList<Retracer>();
 						hb.owner.retrace(nextR,results);
 						for (Retracer res : results) {
@@ -163,34 +157,6 @@ public class Retracer extends Ray {
 						}
 					}
 				}
-//				Vec s = hb.getDirVec().dividedBy(Lis.scatterCount-1);
-//				Vec intersectionDir = new Vec(0);
-//				for (int scIdx = 0; scIdx < Lis.scatterCount; scIdx++) {
-//					Vec intersection = hb.pos1.added(intersectionDir);
-//					double rayAngle = position.to(intersection).angle();
-//					intersectionDir.add(s);
-//					Retracer nextR = clone();
-//					//assume component at Vec(0) and angle 0, normalize incoming ray
-//					nextR.distanceTravelled += position.distanceTo(intersection);
-//					nextR.position = intersection.clone(); //DEBUGGED
-//					nextR.position.subtract(hb.owner.position);
-//					nextR.position.rotate(-hb.owner.angle);
-//					nextR.angle = Lis.normalizeAngleShallow(rayAngle - hb.owner.angle); //each scattered ray has a different angle
-//					nextR.scattering = false; //scattering by default false
-//					nextR.energyPercentage /= Lis.scatterDensity;
-//					ArrayList<Retracer> results = new ArrayList<Retracer>();
-//					hb.owner.retrace(nextR,results);
-//					for (Retracer res : results) {
-//						//denormalize retracing results from the component
-//						res.position.rotate(hb.owner.angle);
-//						res.position.add(hb.owner.position);
-//						res.angle += hb.owner.angle;
-//						res.root = root;
-//						res.ignoreComponent = hb.master;
-//						if (Double.isNaN(res.sourcePower)) { nextRetracers.add(res); } //hasn't reached a light source
-//						else { root.vecWave.add(Vec.newVecModArg(res.sourcePower*res.energyPercentage, Lis.normalizeAngle(res.distanceTravelled*Lis.wavelengthNormalizer))); } //reached a light source
-//					}
-//				}
 			}
 		}else { //else if not scattering
 			final Vec dir = Vec.newVecModArg(1, angle);

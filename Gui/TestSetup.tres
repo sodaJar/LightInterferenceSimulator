@@ -1,0 +1,42 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://Data.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"camPos": Vector2( 482, 2 ),
+"camZoom": Vector2( 1, 1 ),
+"components": {
+"Screen": {
+"description": "The one-sided photosensitive screen of negligible thickness that detects the intensity of incoming light rays. The output graph will be generated from what this screen observes. There can only be one screen
+-Resolution- is the number of points on the resulting graph. Increase this value if the result appears too rough or chaotic
+-Quality- of the screen does not matter",
+"name": "Screen",
+"nameUnique": "Screen",
+"properties": {
+"positionX": [ "f0:cm", {
+} ],
+"positionY": [ "f0:cm", {
+} ],
+"quality": [ "f100:%", {
+"floatStep": 1,
+"min": "f10:%"
+} ],
+"resolution": [ "i100:points", {
+"min": "i50:points"
+} ],
+"rotation": [ "f0:degrees", {
+} ],
+"screenWidth": [ "f10:cm", {
+"min": "f1:mm"
+} ]
+}
+}
+},
+"i": 9053,
+"s": 10,
+"t": 50,
+"th": 50,
+"w": 650.0
+}

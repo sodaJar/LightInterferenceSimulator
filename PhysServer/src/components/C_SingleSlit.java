@@ -11,7 +11,7 @@ public class C_SingleSlit extends Component {
 	
 	@Override
 	public void initialize() {
-		innateQuality = 0.05;
+		innateQuality = 0.01;
 		hitboxes.add(new HitboxSegment(-obstacleWidth/2,0, -slitWidth/2,0,false,this));
 		hitboxes.add(new HitboxSegment(-slitWidth/2,0, slitWidth/2,0,true,this));
 		hitboxes.add(new HitboxSegment(slitWidth/2,0, obstacleWidth/2,0,false,this));

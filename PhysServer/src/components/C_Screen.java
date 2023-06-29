@@ -16,7 +16,7 @@ public class C_Screen extends Component{
 	
 	@Override
 	public void initialize() {
-		Main.println("init screen");
+		Main.println("Init screen");
 		hitboxes.add(new HitboxSegment(-screenWidth/2,0, screenWidth/2,0,false,this));
 		double s = screenWidth/resolution;
 //		if (true) {

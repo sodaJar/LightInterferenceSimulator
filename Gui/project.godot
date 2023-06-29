@@ -13,15 +13,9 @@ _global_script_classes=[ {
 "class": "Data",
 "language": "GDScript",
 "path": "res://Data.gd"
-}, {
-"base": "Reference",
-"class": "RefComponent",
-"language": "GDScript",
-"path": "res://Components/RefComponent.gd"
 } ]
 _global_script_class_icons={
-"Data": "",
-"RefComponent": ""
+"Data": ""
 }
 
 [application]
@@ -72,6 +66,11 @@ texture={
 "stream": false,
 "svg/scale": 1.0
 }
+
+[logging]
+
+file_logging/enable_file_logging=true
+file_logging/log_path="user://logs/Gui.log"
 
 [physics]
 

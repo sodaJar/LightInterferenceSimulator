@@ -5,16 +5,17 @@ public class Lis {
 	//to be passed in from UI app
 	public static int instancePort = 9053; //the port to occupy
 	public static double wavelength = nm2m(650); //the global wavelength of light
-	public static int scatterCount = 30; //number of scattered rays per hitbox
-	public static int collisionTestSize = 10; //number of test rays with retracer per hitbox
-	public static int threadCount = 50; //number of threads to generate
+	public static int scatterCount = 10000; //number of scattered rays per hitbox
+	public static int collisionTestSize = 25; //number of test rays with retracer per hitbox
+	public static int threadCount = 30; //number of threads to generate
 	
 	public @interface ToBeOverriden {} //custom annotation
 	
 	public static final double TWO_PI = 2*Math.PI;
 	public static final double PI_BY_TWO = Math.PI/2;
-	public static final double wavelengthNormalizer = 2*Math.PI/Lis.wavelength; //changes wavelengths in meters to phase in radians
-	public static final double wavelengthDenormalizer = 1/wavelengthNormalizer; //changes phase in radians to wavelengths in meters
+	
+	public static double wavelengthNormalizer; //changes wavelengths in meters to phase in radians, initialized on runtime when wavelength is passed in
+	public static double wavelengthDenormalizer; //changes phase in radians to wavelengths in meters, initialized on runtime when wavelength is passed in
 	
 	public static boolean nearEqual(double a) { return nearEqual(a,0,1e-10); }
 	public static boolean nearEqual(double a, double b) { return nearEqual(a,b,1e-10); }
@@ -27,7 +28,7 @@ public class Lis {
 		LINE //the line on lying on  <position> extending along <direction> 
 	}
 	
-	//The method gets the intersection of the two lines and then verifies if the intersection is valid given the line types
+	//the method gets the intersection of the two lines and then verifies if the intersection is valid given the line types
 	public static Vec getIntersection(Vec pos1, Vec dir1, Vec pos2, Vec dir2, LINE_TYPE line1Type, LINE_TYPE line2Type) {
 		Vec intersection = getLineIntersection(pos1, dir1, pos2, dir2); //the intersection of lines without considering line types(rays, segments, etc.)
 		if (intersection == null) { return null; }

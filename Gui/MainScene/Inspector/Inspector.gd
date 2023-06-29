@@ -23,7 +23,7 @@ func inspect(cNameUnique:String):
 	for key in c.properties:
 		var p:Node2D
 		var val = c.properties[key]
-		p = preload("res://Property/Property.tscn").instance()
+		p = preload("Property.tscn").instance()
 		p.cNameUnique = cNameUnique
 		p.type = val[0].substr(0,1)
 		p.propertyName = key

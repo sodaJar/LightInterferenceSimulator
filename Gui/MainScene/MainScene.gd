@@ -24,18 +24,15 @@ func _ready():
 	Lis.getNode("inspector").inspect(Lis.components.keys()[0])
 
 func _on_RunButton_pressed():
-	print(OS.get_executable_path().get_base_dir()+"/PhysServer/LisPhysServer.exe")
-	print(Lis.getDataArray())
-	var blocking = true
 	runButton.disabled = true
-	OS.execute(OS.get_executable_path().get_base_dir()+"/PhysServer/LisPhysServer.exe",Lis.getDataArray(),blocking)
-	yield(get_tree().create_timer(1 if blocking else 3),"timeout")
+	OS.execute(OS.get_executable_path().get_base_dir()+"/PhysServer/LisPhysServer.exe",Lis.getDataArray())
+	yield(get_tree().create_timer(1),"timeout")
 	runButton.disabled = false
 
 var symbolMap:Dictionary = {}
 
 func addSymbol(cNameUnique:String):
-	var s:Sprite = preload("res://Symbol/Symbol.tscn").instance()
+	var s:Sprite = preload("Symbol/Symbol.tscn").instance()
 	var c:Dictionary = Lis.components[cNameUnique]
 	s.component = c
 	add_child(s)

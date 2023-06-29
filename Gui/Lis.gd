@@ -6,7 +6,7 @@ var scatterDensity:int
 var testScatterCount:int
 var threadCount:int
 var instancePort:int
-#WORK actual unit instead of unit type, liquidate prefferedUnit and inspector's propertyCache
+
 const GALLERY:Dictionary = {
 	"Mirror":{
 		"icon":preload("res://ComponentAssets/Mirror.png"),
@@ -61,8 +61,8 @@ const GALLERY:Dictionary = {
 func getDataArray() -> Array:
 	var r:Array = []
 	r.append_array(["f"+str(wavelength),"i"+str(scatterDensity),
-	"i"+str(testScatterCount),"i"+str(threadCount),"i"+str(instancePort)])
-	for key in components:
+	"i"+str(testScatterCount),"i"+str(threadCount),"i"+str(instancePort)]) #the first few items are the global settings
+	for key in components: #then, alternate between component name and properties
 		var c = components[key]
 		r.append(c.name)
 		var props:String = ""
@@ -70,6 +70,8 @@ func getDataArray() -> Array:
 			var p = c.properties[pName]
 			var valArr:Array = value2array(p[0])
 			var val = parseValue(valArr)
+			#the format of properties: [property1Name] [value1];[property2Name] [value2];
+			#properties are seperated by semi-colons. Name and value are seperated with a whitespace
 			props += pName+" "+valArr[0]+( str(val) if (val is bool||val is int) else float2stringPrecise(unifyFrom(val,valArr[2])) )+";"
 		r.append(props)
 	return r
@@ -88,8 +90,8 @@ const unitMap = {
 }
 
 func isUnitDefault(unit:String)->bool: return unit in ["m","dm","cm","mm","um","nm"]
-func value2array(value:String) -> Array:
-	var seperatorIndex:int = value.find(":")
+func value2array(value:String) -> Array: #splits a string value in the standard format to an array
+	var seperatorIndex:int = value.find(":") #colon seperates the numerical value and the unit
 	assert(seperatorIndex>0)
 	return [value.substr(0,1),value.substr(1,seperatorIndex-1),value.substr(seperatorIndex+1)]
 func parseValue(valueArr:Array):
@@ -147,17 +149,16 @@ func deleteComponent(cNameUnique:String):
 const SAVE_PATH:String = "user://data/"#"./data/"
 const DEFAULT_FILE_NAME:String = "save.tres"
 
-func saveDataAbs(data:Dictionary,path:String) -> int:
-	var dir = Directory.new()#create new Directory and assign to dir
-	#if the SAVE_PATH doesn't exist, create path
-	var e = dir.open(path.get_base_dir())
-	assert(e == OK,"Failed to open executable directory: Code "+str(e))
-	if !dir.dir_exists(path): assert("Path input invalid")
+func saveDataAbs(data:Dictionary,path:String) -> int: #saves a dictionary to an absolute path
+	var dir:Directory = Directory.new()
+	var e = dir.open(".")
+	assert(e == OK,"Failed to open executable directory: Code "+str(e)) #writes message to log file
+	assert(dir.dir_exists(path.get_base_dir()),"Path input invalid")
 	var file = Data.new()
 	file.data = data
-	return ResourceSaver.save(path,file)
+	return ResourceSaver.save(path,file) #returns an int error code
 func loadDataAbs(path:String):
 	var resource = ResourceLoader.load(path)
-	if !is_instance_valid(resource): return null
-	if !("data" in resource): return null
+	if !is_instance_valid(resource): return null #if the file failed to load
+	if !("data" in resource): return null #if the file loaded is not valid
 	return resource.data

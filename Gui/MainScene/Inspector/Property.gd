@@ -97,14 +97,15 @@ func getUnit() -> String:
 	if unitButton.get_item_id(unitButton.selected)==unitButtonIdMap["um"]: return "um"
 	return unitButton.get_item_text(unitButton.selected)
 
-func _on_UnitOptionButton_item_selected(index):
+func _on_UnitOptionButton_item_selected(index): #when the user changes the distance unit
+	#update the min and max values to match the new unit
 	updateInputNumMin(getUnit())
 	updateInputNumMax(getUnit())
-	_on_ValueNum_value_changed(null)
+	_on_ValueNum_value_changed(null) #changing only the unit is equivalent a change in value, so call update
 
-func _on_ValueNum_value_changed(value):
+func _on_ValueNum_value_changed(value): #the value of the property is changed
 	if ignoreInputValueChange: return
-	match type:
+	match type: #update the global list of components and respective symbols in the sandbox view
 		"f":
 			Lis.components[cNameUnique].properties[propertyName][0] = "f"+Lis.float2stringPrecise(valueInputNum.value)+":"+getUnit()
 			Lis.getNode("mainScene").updateSymbol(cNameUnique)

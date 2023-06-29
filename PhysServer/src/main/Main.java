@@ -3,7 +3,6 @@ package main;
 import java.awt.Dimension;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -72,20 +71,61 @@ public class Main {
 		return null;
 	}
 	
+	private static Setup interpretArgs(String[] args) {
+		Lis.wavelength = Lis.nm2m((double)parseValue(args[0]));
+		Lis.wavelengthNormalizer = 2*Math.PI/Lis.wavelength;
+		Lis.wavelengthDenormalizer = 1/Lis.wavelengthNormalizer;
+		Lis.scatterCount = (int)parseValue(args[1])*1000;
+		Lis.collisionTestSize = (int)parseValue(args[2]);
+		Lis.threadCount = (int)parseValue(args[3]);
+		
+		Setup setup = new Setup();
+		
+		for (int idx = 5; idx < args.length; idx += 2) { //go through every component to be added
+			String component = args[idx];
+			HashMap<String,Object> properties = new HashMap<String,Object>();
+			String propVal = args[idx+1];
+			Vec cPosition = new Vec(); //because the GUI doesn't take the vector data type, positionX and positionY need to be joined manually to form position
+			while(true) { //get the properties and corresponding values of the component, being careful of special properties whose formats are unusual
+				int mid = propVal.indexOf(' ');
+				if (mid<0) { break; }
+				int end = propVal.indexOf(';');
+				String property = propVal.substring(0,mid);
+				Object value = parseValue(propVal.substring(mid+1,end));
+				propVal = propVal.substring(end+1);
+				if (property.equals("positionX")) {
+					cPosition.x = (Double)value;
+					continue;
+				}else if (property.equals("positionY")) {
+					cPosition.y = (Double)value;
+					continue;
+				}
+				if (property.equals("rotation")) { property = "angle"; } //this property is called "rotation" in the GUI, but "angle" in this physics server
+				properties.put(property, value);
+				println(property+" "+value);
+			}
+			properties.put("position", cPosition);
+			setup.addComponent(component, properties); //add the component, their properties, and their values to the setup
+		}
+		return setup;
+	}
+	
 	public static void main(String[] args) {
 		//args format:
 		//[wavelength, scatterCount, testScatterCount, threadCount, instancePort, <component 1 name>, <property1> <value1>;<property2> <value2>;..., <c 2 name>, <p1> <v1>;, ...]
 		//the first character of a value string indicates its type: f -> double, i -> int, b -> boolean
-//		args = new String[] {"f650", "i10", "i30", "i20", "i9053", "Laser","beamWidth f0.0001;power f1;positionX f0;positionY f0.4;quality f1;rotation f3.14159265358979;", "Screen", "screenWidth f0.2;resolution i100;positionX f0;positionY f0;quality f1;rotation f0;", "SingleSlit", "obstacleWidth f1;slitWidth f0.000005;positionX f0;positionY f0.2;quality f1;rotation f0;"};
 		if (args.length<7) { //when the physics server starts directly
+			Lis.wavelengthNormalizer = 2*Math.PI/Lis.wavelength;
+			Lis.wavelengthDenormalizer = 1/Lis.wavelengthNormalizer;
 			Environment env = new Environment();
 			String option = JOptionPane.showInputDialog("PRESET\n0 - LASER\n1 - MULTI SLIT\n2 - GLASS SLAB EDGE\n");
 			if (option==null || option.isBlank()) { return; }
 			switch(option){
 				case "0":
 					Setup setup = new Setup();
-					setup.addComponent("Screen", Map.ofEntries(Map.entry("position",new Vec(0)),Map.entry("angle",0),Map.entry("screenWidth",0.1),Map.entry("resolution",150),Map.entry("quality",1)));
-					setup.addComponent("Laser", Map.ofEntries(Map.entry("position",new Vec(0,1)),Map.entry("angle",Math.PI),Map.entry("beamWidth",Lis.mm2m(0.1)),Map.entry("power",1),Map.entry("quality",1)));
+					setup.addComponent("Screen", Map.ofEntries(Map.entry("position",new Vec(0)),Map.entry("angle",0),Map.entry("screenWidth",0.1),Map.entry("resolution",500),Map.entry("quality",1)));
+					setup.addComponent("SingleSlit", Map.ofEntries(Map.entry("position",new Vec(0,0.2)),Map.entry("angle",0),Map.entry("obstacleWidth",1),Map.entry("slitWidth",Lis.nm2m(5000)),Map.entry("quality",1)));
+					setup.addComponent("Laser", Map.ofEntries(Map.entry("position",new Vec(0,0.4)),Map.entry("angle",Math.PI),Map.entry("beamWidth",Lis.mm2m(0.1)),Map.entry("power",1),Map.entry("quality",1)));
 					long startTime = System.nanoTime();
 					setup.run();
 					long endTime = System.nanoTime();
@@ -131,47 +171,14 @@ public class Main {
 			return;
 		}
 		
-		//args format:
-		//[wavelength, scatterCount, testScatterCount, threadCount, instancePort, <component 1 name>, <property1> <value1>;<property2> <value2>;..., <c 2 name>, <p1> <v1>;, ...]
-		
 		Lis.instancePort = (int)parseValue(args[4]);
 		if (isPortOccupied()) {
 			quitWithMessage("Another simulation instance is likely already running,\nchange the instance port to start a new instance");
 		}
+		//args format:
+		//[wavelength, scatterCount, testScatterCount, threadCount, instancePort, <component 1 name>, <property1> <value1>;<property2> <value2>;..., <c 2 name>, <p1> <v1>;, ...]
 		try { //listens to any runtime error in the main program
-			Lis.wavelength = Lis.nm2m((double)parseValue(args[0]));
-			Lis.scatterCount = (int)parseValue(args[1])*1000;
-			Lis.collisionTestSize = (int)parseValue(args[2]);
-			Lis.threadCount = (int)parseValue(args[3]);
-			
-			Setup setup = new Setup();
-			
-			for (int idx = 5; idx < args.length; idx += 2) { //go through every component to be added
-				String component = args[idx];
-				HashMap<String,Object> properties = new HashMap<String,Object>();
-				String propVal = args[idx+1];
-				Vec cPosition = new Vec(); //because the GUI doesn't take the vector data type, positionX and positionY need to be joined manually to form position
-				while(true) { //get the properties and corresponding values of the component, being careful of special properties whose formats are unusual
-					int mid = propVal.indexOf(' ');
-					if (mid<0) { break; }
-					int end = propVal.indexOf(';');
-					String property = propVal.substring(0,mid);
-					Object value = parseValue(propVal.substring(mid+1,end));
-					propVal = propVal.substring(end+1);
-					if (property.equals("positionX")) {
-						cPosition.x = (Double)value;
-						continue;
-					}else if (property.equals("positionY")) {
-						cPosition.y = (Double)value;
-						continue;
-					}
-					if (property.equals("rotation")) { property = "angle"; } //this property is called "rotation" in the GUI, but "angle" in this physics server
-					properties.put(property, value);
-					println(property+" "+value);
-				}
-				properties.put("position", cPosition);
-				setup.addComponent(component, properties); //add the component, their properties, and their values to the setup
-			}
+			Setup setup = interpretArgs(args);
 			long startTime = System.nanoTime();
 			setup.run();
 			long endTime = System.nanoTime();
@@ -211,10 +218,12 @@ public class Main {
 	public static void print(String message){ System.out.print(message); }
 	public static void print(int message){ System.out.print(message); }
 	public static void print(float message){ System.out.print(message); }
+	public static void print(double message){ System.out.print(message); }
 	public static void print(boolean message){ System.out.print(message); }
 	public static void println(String message){ System.out.println(message); }
 	public static void println(int message){ System.out.println(message); }
 	public static void println(float message){ System.out.println(message); }
+	public static void println(double message){ System.out.println(message); }
 	public static void println(boolean message){ System.out.println(message); }
 	public static void println(){ System.out.println(); }
 

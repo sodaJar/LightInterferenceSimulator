@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://Property/Property.gd" type="Script" id=1]
+[ext_resource path="res://MainScene/Inspector/Property.gd" type="Script" id=1]
 [ext_resource path="res://Theme.tres" type="Theme" id=2]
 
 [node name="Property" type="Node2D"]

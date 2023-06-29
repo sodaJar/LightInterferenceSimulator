@@ -1,8 +1,5 @@
 extends PopupMenu
 
-func _on_UselessButton_button_up():
-	visible = !visible
-
 var idCounter:int = 0
 
 var idMap:Dictionary = {}
@@ -16,7 +13,9 @@ func deleteComponent(cNameUnique:String):
 	remove_item(get_item_index(idMap[cNameUnique]))
 	idMap.erase(cNameUnique)
 
+func _on_ComponentsButton_button_up():
+	visible = !visible
 func _on_ComponentsPopupMenu_index_pressed(index):
+	#the actual unique name (camelCase) should be the display name with all spaces removed
 	var cNameUnique = get_item_text(index).replace(" ","")
 	Lis.getNode("inspector").inspect(cNameUnique)
-	
