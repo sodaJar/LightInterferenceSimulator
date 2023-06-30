@@ -3,8 +3,6 @@ package environment;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import javax.swing.JOptionPane;
-
 import components.C_SingleSlit;
 import components.Component;
 import components.HitboxSegment;

@@ -36,7 +36,7 @@ public class Lis {
 			if (pos1.nearEqual(pos2)) { return pos1.clone(); } //if they on directly on each other, they intersect at that point
 			boolean steep = Math.abs(pos1.y-pos2.y)>Math.abs(pos1.x-pos2.x); //steepness is the difference in positions since they are collinear
 			if (steep) { //use y instead of x if it's steep to judge range
-				pos1 = pos1.flippedXY();
+				pos1 = pos1.flippedXY(); //clones must created so the edits don't effect the original
 				dir1 = dir1.flippedXY();
 				pos2 = pos2.flippedXY();
 				dir2 = dir2.flippedXY();
@@ -57,11 +57,11 @@ public class Lis {
 		boolean steep1 = Math.abs(dir1.y)>Math.abs(dir1.x);
 		boolean steep2 = Math.abs(dir2.y)>Math.abs(dir2.x);
 		if (steep1) {
-			pos1 = pos1.flippedXY();
+			pos1 = pos1.flippedXY(); //clones must created so the edits don't effect the original
 			dir1 = dir1.flippedXY();
 		}
 		if (steep2) {
-			pos2 = pos2.flippedXY();
+			pos2 = pos2.flippedXY(); //clones must created so the edits don't effect the original
 			dir2 = dir2.flippedXY();
 		}
 		Vec minMax1 = getLineMinMax1D(pos1.x,dir1.x,line1Type);

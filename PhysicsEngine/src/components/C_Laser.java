@@ -29,6 +29,5 @@ public class C_Laser extends Component{
 	//the beam width is the width where the power is greater than 1/e^2 of the max power
 	private double getPowerAt(double x) {
 		return normalDistCoeff*Math.exp(-8*x*x/(beamWidth*beamWidth));
-//		return power/Math.exp(8*(x*x)/(beamWidth*beamWidth)); //wrong obsolete formula
 	}
 }
