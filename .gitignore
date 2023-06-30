@@ -2,10 +2,10 @@
 *.class
 *.log
 .metadata/**
-PhysServer/bin/**
-PhysServer/.classpath
-PhysServer/.project
-PhysServer/.settings/**
-PhysServer/.metadata/**
-PhysServer/.settings/**
+PhysicsEngine/bin/**
+PhysicsEngine/.classpath
+PhysicsEngine/.project
+PhysicsEngine/.settings/**
+PhysicsEngine/.metadata/**
+PhysicsEngine/.settings/**
 Gui/.import/**
