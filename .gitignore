@@ -9,3 +9,6 @@ PhysicsEngine/.settings/**
 PhysicsEngine/.metadata/**
 PhysicsEngine/.settings/**
 Gui/.import/**
+Build/PhysicsEngine/**
+Build/*.exe
+Build/*.pck
