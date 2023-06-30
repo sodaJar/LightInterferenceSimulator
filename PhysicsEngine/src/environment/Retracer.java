@@ -129,9 +129,8 @@ public class Retracer extends Ray {
 					double s = delta/(scCount-1); //angular spacing fixed scatter count for specific hitbox
 					for (int scIdx = 0; scIdx < scCount; scIdx++) { //retrace each ray
 						Retracer nextR = clone();
-//						double rayAngle = a1+(((double)scIdx)/(Lis.scatterCount-1))*delta;
 						double rayAngle = Lis.normalizeAngleShallow(a1+((double)scIdx)*s);
-//						//since we know for sure all rays are concentrated on the hitbox, and they must intersect, a line intersection check is enough
+						//since we know for sure all rays are concentrated on the hitbox, and they must intersect, a line intersection check is enough
 						Vec intersection = Lis.getLineIntersection(position, Vec.newVecModArg(1, rayAngle), hb.pos1, hb.getDirVec());
 						if (intersection == null) { continue; }
 						//assume component at Vec(0) and angle 0, normalize incoming ray
@@ -145,7 +144,6 @@ public class Retracer extends Ray {
 						ArrayList<Retracer> results = new ArrayList<Retracer>();
 						hb.owner.retrace(nextR,results);
 						for (Retracer res : results) {
-//							if (hb.owner instanceof C_Laser) Main.println("output "+res.position.toString());
 							//denormalize retracing results from the component
 							res.position.rotate(hb.owner.angle);
 							res.position.add(hb.owner.position);
@@ -153,7 +151,8 @@ public class Retracer extends Ray {
 							res.root = root;
 							res.ignoreComponent = hb.owner;
 							if (Double.isNaN(res.sourcePower)) { nextRetracers.add(res); } //hasn't reached a light source
-							else { root.vecWave.add(Vec.newVecModArg(res.sourcePower*res.energyPercentage, Lis.normalizeAngle(res.distanceTravelled*Lis.wavelengthNormalizer))); } //reached a light source
+							//else reached a light source
+							else { root.vecWave.add(Vec.newVecModArg(res.sourcePower*res.energyPercentage, Lis.normalizeAngle(res.distanceTravelled*Lis.wavelengthNormalizer))); }
 						}
 					}
 				}
@@ -167,10 +166,6 @@ public class Retracer extends Ray {
 				if (c == ignoreComponent) { continue; }
 				for (int i = 0; i < c.hitboxes.size(); i++) {
 					HitboxSegment hb = c.hitboxes.get(i);
-//					if (c instanceof C_SingleSlit) {
-//						Main.println("Single slit not scatter");
-//					}
-//					if (this instanceof RetracerRoot) Main.println("is root");
 					if (!hb.responsive) { continue; } //to prevent the retracer from detecting intersection with the same hitbox over and over
 					Vec intersection = Lis.getIntersection(hb.pos1, hb.getDirVec(), position, dir, Lis.LINE_TYPE.SEGMENT, Lis.LINE_TYPE.RAY);
 					if (intersection == null || intersection.nearEqual(position,1e-9)) { continue; }

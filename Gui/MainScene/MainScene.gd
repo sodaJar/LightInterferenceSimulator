@@ -25,7 +25,7 @@ func _ready():
 
 func _on_RunButton_pressed():
 	runButton.disabled = true
-	OS.execute(OS.get_executable_path().get_base_dir()+"/PhysServer/LisPhysServer.exe",Lis.getDataArray())
+	OS.execute(OS.get_executable_path().get_base_dir()+"/PhysicsEngine/LisPhE.exe",Lis.getDataArray())
 	yield(get_tree().create_timer(1),"timeout")
 	runButton.disabled = false
 

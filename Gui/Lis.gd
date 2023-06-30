@@ -57,7 +57,7 @@ const GALLERY:Dictionary = {
 	}
 }
 
-#format data for physics server, convert all units to SI units (unify)
+#format data for the physics engine, convert all units to SI units (unify)
 func getDataArray() -> Array:
 	var r:Array = []
 	r.append_array(["f"+str(wavelength),"i"+str(scatterDensity),
