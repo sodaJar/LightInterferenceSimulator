@@ -97,7 +97,7 @@ public class Main {
 		if (args.length < 6) { System.exit(0); } //if the user directly clicks on the physics engine, nothing should happen
 		try { //listens to any runtime error in the main program
 			Setup setup = interpretArgs(args);
-			long startTime = System.nanoTime();
+			long startTime = System.nanoTime(); //solution by < https://stackoverflow.com/questions/180158/how-do-i-time-a-methods-execution-in-java >
 			setup.run();
 			long endTime = System.nanoTime();
 			System.out.println((endTime-startTime)/1000000000.0+"s"); //for checking performance, debug only
