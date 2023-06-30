@@ -25,7 +25,7 @@ public class Lis {
 		POINT, //the <direction> does not in this case matter
 		SEGMENT, //the segment from <position> to <position> + <direction>
 		RAY, //the ray from <position> heading towards <direction>
-		LINE //the line on lying on  <position> extending along <direction> 
+		LINE //the line lying on <position> extending along <direction> 
 	}
 	
 	//the method gets the intersection of the two lines and then verifies if the intersection is valid given the line types

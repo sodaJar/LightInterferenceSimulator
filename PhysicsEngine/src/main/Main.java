@@ -1,10 +1,7 @@
 package main;
 
 import java.awt.Dimension;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 import javax.swing.JComponent;
@@ -21,8 +18,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-
-import environment.Environment;
 
 public class Main {
 	static Scanner scanner = new Scanner(System.in);
@@ -47,18 +42,6 @@ public class Main {
 	public static void disposeProgressBar(JProgressBar pb) { ((JFrame)SwingUtilities.getRoot(pb)).dispose(); }
 	public static void updateProgressBarTitle(JProgressBar pb,String title) { ((JFrame)SwingUtilities.getRoot(pb)).setTitle(title); }
 	
-	//occupy port to ensure single instance
-	private static boolean isPortOccupied() {
-		try {
-			//occupy a port to ensure one instance of this program is running at the same time
-			//the port is automatically freed by the OS when the program terminates
-			@SuppressWarnings({ "resource", "unused" })
-			ServerSocket socket = new ServerSocket(Lis.instancePort, 0, InetAddress.getByAddress(new byte[] {127,0,0,1}));
-		}
-		catch (Exception e) { return true; } //if a port is already occupied
-		return false;
-	}
-	
 	private static Object parseValue(String val) { //parses a string value
 		switch (val.charAt(0)) {
 		case 'f':
@@ -81,7 +64,7 @@ public class Main {
 		
 		Setup setup = new Setup();
 		
-		for (int idx = 5; idx < args.length; idx += 2) { //go through every component to be added
+		for (int idx = 4; idx < args.length; idx += 2) { //go through every component to be added
 			String component = args[idx];
 			HashMap<String,Object> properties = new HashMap<String,Object>();
 			String propVal = args[idx+1];
@@ -100,7 +83,7 @@ public class Main {
 					cPosition.y = (Double)value;
 					continue;
 				}
-				if (property.equals("rotation")) { property = "angle"; } //this property is called "rotation" in the GUI, but "angle" in this physics server
+				if (property.equals("rotation")) { property = "angle"; } //this property is called "rotation" in the GUI, but "angle" in this physics engine
 				properties.put(property, value);
 				println(property+" "+value);
 			}
@@ -111,72 +94,7 @@ public class Main {
 	}
 	
 	public static void main(String[] args) {
-		//args format:
-		//[wavelength, scatterCount, testScatterCount, threadCount, instancePort, <component 1 name>, <property1> <value1>;<property2> <value2>;..., <c 2 name>, <p1> <v1>;, ...]
-		//the first character of a value string indicates its type: f -> double, i -> int, b -> boolean
-		if (args.length<7) { //when the physics server starts directly
-			Lis.wavelengthNormalizer = 2*Math.PI/Lis.wavelength;
-			Lis.wavelengthDenormalizer = 1/Lis.wavelengthNormalizer;
-			Environment env = new Environment();
-			String option = JOptionPane.showInputDialog("PRESET\n0 - LASER\n1 - MULTI SLIT\n2 - GLASS SLAB EDGE\n");
-			if (option==null || option.isBlank()) { return; }
-			switch(option){
-				case "0":
-					Setup setup = new Setup();
-					setup.addComponent("Screen", Map.ofEntries(Map.entry("position",new Vec(0)),Map.entry("angle",0),Map.entry("screenWidth",0.1),Map.entry("resolution",500),Map.entry("quality",1)));
-					setup.addComponent("SingleSlit", Map.ofEntries(Map.entry("position",new Vec(0,0.2)),Map.entry("angle",0),Map.entry("obstacleWidth",1),Map.entry("slitWidth",Lis.nm2m(5000)),Map.entry("quality",1)));
-					setup.addComponent("Laser", Map.ofEntries(Map.entry("position",new Vec(0,0.4)),Map.entry("angle",Math.PI),Map.entry("beamWidth",Lis.mm2m(0.1)),Map.entry("power",1),Map.entry("quality",1)));
-					long startTime = System.nanoTime();
-					setup.run();
-					long endTime = System.nanoTime();
-					System.out.println((endTime-startTime)/1000000000.0+"s");
-					return;
-				case "1":
-					final int nSlits = Integer.parseInt(JOptionPane.showInputDialog("NUMBER OF SLITS"));
-					if (nSlits <= 0) return; 
-					for (int i = -450-(int)Math.pow(2,-nSlits/10+5)*50; i < 450+(int)Math.pow(2,-nSlits/10+5)*50; i++) {
-						env.addObserver(0.5,i*0.0001);
-					}
-					for (int i = -nSlits/2; i < nSlits-nSlits/2; i++) {
-						for (int j = -300; j < 300; j++) {
-							env.addSource(0,(nSlits%2!=0?i:(i+0.5))*Lis.wavelength*12+(j+0.5)*Lis.wavelength/100);
-						}
-					}
-					env.run();
-					break;
-				case "2": //GLASS SLAB
-					final double s = 0.001/1000;
-					for (int i = -1000; i < 1000; i++) {
-						env.addObserver(0.05,i*0.0000005);
-					}
-					for (int i = -5000; i < 0; i++) {
-						env.addSource(0,i*s);
-					}
-					for (int i = 0; i < 5000; i++) {
-						int idx = env.addSource(0,i*s);
-						env.sources.get(idx).shift = Lis.wavelength/3;
-					}
-					env.run();
-					break;
-			}
-			int n = env.observers.size();
-			//DISPLAY READINGS
-			double displacements[] = new double[n];
-			double observations[] = new double[n];
-			for (int i = 0; i < n; i++) {
-				displacements[i] = Lis.m2mm(env.observers.get(i).position.y);//i-nObservers/2;
-				observations[i] = Math.pow(env.observers.get(i).observation,2);
-			}
-			displayGraph(displacements,observations);
-			return;
-		}
-		
-		Lis.instancePort = (int)parseValue(args[4]);
-		if (isPortOccupied()) {
-			quitWithMessage("Another simulation instance is likely already running,\nchange the instance port to start a new instance");
-		}
-		//args format:
-		//[wavelength, scatterCount, testScatterCount, threadCount, instancePort, <component 1 name>, <property1> <value1>;<property2> <value2>;..., <c 2 name>, <p1> <v1>;, ...]
+		if (args.length < 6) { System.exit(0); } //if the user directly clicks on the physics engine, nothing should happen
 		try { //listens to any runtime error in the main program
 			Setup setup = interpretArgs(args);
 			long startTime = System.nanoTime();

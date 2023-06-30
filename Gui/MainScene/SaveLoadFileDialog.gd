@@ -32,7 +32,6 @@ func _on_SaveLoadFileDialog_file_selected(path):
 			"s":Lis.scatterDensity,
 			"t":Lis.testScatterCount,
 			"th":Lis.threadCount,
-			"i":Lis.instancePort,
 			"components":Lis.components
 		},path)
 	else:
@@ -44,7 +43,6 @@ func _on_SaveLoadFileDialog_file_selected(path):
 		Lis.scatterDensity = data.s
 		Lis.testScatterCount = data.t
 		Lis.threadCount = data.th
-		Lis.instancePort = data.i
 		Lis.getNode("globals").updateSpinBoxes()
 		for cNameUnique in Lis.components.keys(): Lis.deleteComponent(cNameUnique)
 		for key in data.components:

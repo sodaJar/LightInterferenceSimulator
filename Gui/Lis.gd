@@ -5,7 +5,6 @@ var wavelength:float
 var scatterDensity:int
 var testScatterCount:int
 var threadCount:int
-var instancePort:int
 
 const GALLERY:Dictionary = {
 	"Mirror":{
@@ -61,7 +60,7 @@ const GALLERY:Dictionary = {
 func getDataArray() -> Array:
 	var r:Array = []
 	r.append_array(["f"+str(wavelength),"i"+str(scatterDensity),
-	"i"+str(testScatterCount),"i"+str(threadCount),"i"+str(instancePort)]) #the first few items are the global settings
+	"i"+str(testScatterCount),"i"+str(threadCount)]) #the first few items are the global settings
 	for key in components: #then, alternate between component name and properties
 		var c = components[key]
 		r.append(c.name)
