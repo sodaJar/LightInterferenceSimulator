@@ -47,7 +47,7 @@ public class Setup {
 				nextRetracers.clear();
 				currentRetracers.clear();
 				currentRetracers.add(retracerRoot);
-				int retraceSteps = 1000;
+				int retraceSteps = 30;
 				while (retraceSteps > 0) { //loop until there are no nextRetracers or max steps exceeded (likely due to reflective surfaces facing each other)
 					retraceSteps --;
 					nextRetracers.clear(); //prepare for calculation

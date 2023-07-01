@@ -138,7 +138,7 @@ public class Retracer extends Ray {
 						nextR.position.rotate(-hb.owner.angle);
 						nextR.angle = Lis.normalizeAngle(rayAngle - hb.owner.angle); //each scattered ray has a different angle
 						nextR.scattering = false; //scattering by default false
-						nextR.energyPercentage /= scCount;
+						nextR.energyPercentage *= delta/(Math.PI*scCount);
 						ArrayList<Retracer> results = new ArrayList<Retracer>();
 						hb.owner.retrace(nextR,results);
 						for (Retracer res : results) {

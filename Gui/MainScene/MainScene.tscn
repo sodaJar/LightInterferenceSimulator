@@ -158,7 +158,7 @@ margin_right = 334.0
 margin_bottom = 576.0
 theme = ExtResource( 5 )
 min_value = 1.0
-value = 10.0
+value = 5.0
 allow_greater = true
 align = 1
 suffix = "e3 /obj"
@@ -168,7 +168,7 @@ margin_left = 360.0
 margin_top = 489.0
 margin_right = 463.0
 margin_bottom = 537.0
-hint_tooltip = "Precision of collision checking, increase this value if component sizes vary grealy"
+hint_tooltip = "Precision of collision checking, increase this value if component sizes vary greatly"
 theme = ExtResource( 5 )
 bbcode_enabled = true
 bbcode_text = "Collision Test Density"
@@ -182,9 +182,9 @@ margin_top = 543.0
 margin_right = 480.0
 margin_bottom = 576.0
 theme = ExtResource( 5 )
-min_value = 20.0
+min_value = 10.0
 max_value = 1000.0
-value = 50.0
+value = 20.0
 allow_greater = true
 align = 1
 suffix = "/obj"
@@ -195,7 +195,7 @@ margin_top = 489.0
 margin_right = 620.0
 margin_bottom = 537.0
 hint_tooltip = "The number of concurrent calculations, more threads will generally be faster,
-but too many may not help"
+but too many may clog the machine, a value of 5-30 is generally recommended"
 theme = ExtResource( 5 )
 bbcode_enabled = true
 bbcode_text = "Calculation Thread Count"
@@ -211,7 +211,7 @@ margin_bottom = 576.0
 theme = ExtResource( 5 )
 min_value = 1.0
 max_value = 1000.0
-value = 50.0
+value = 10.0
 align = 1
 
 [node name="RunButton" type="Button" parent="Ui"]
