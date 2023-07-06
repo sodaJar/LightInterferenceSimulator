@@ -1,5 +1,10 @@
-Light Interference Simulator User Manual
-==============================================================
+
+
+--------------------------------------------------------------
+# Light Interference Simulator User Manual
+IBDP Computer Science Internal Assessment
+
+--------------------------------------------------------------
 
 To start the GUI program, run Lis.exe
 
@@ -38,4 +43,4 @@ If the graph appears incorrect, you can try to:
 
 --------------------------------------------------------------
 
-IBDP Computer Science Internal Assessment
+22.04.2023 - 26.06.2023
