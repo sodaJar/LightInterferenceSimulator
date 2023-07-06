@@ -18,7 +18,7 @@ const GALLERY:Dictionary = {
 		"icon":preload("res://ComponentAssets/BeamSplitter.png"),
 		"description":"A beam splitter of negligible thickness\n-Slab width- is the length of the component",
 		"properties":{
-			"slabWidth":["f10:cm",{"min":"f1:cm"}]
+			"slabWidth":["f5:cm",{"min":"f1:cm"}]
 		}
 	},
 	"SingleSlit":{
@@ -40,7 +40,7 @@ const GALLERY:Dictionary = {
 		"Increase this value if the result appears too rough or chaotic"+\
 		"\n-Quality- of the screen does not matter",
 		"properties": {
-			"screenWidth":["f10:cm",{"min":"f1:mm"}],
+			"screenWidth":["f3:cm",{"min":"f1:mm"}],
 			"resolution":["i100:points",{"min":"i50:points"}]
 		},
 	},

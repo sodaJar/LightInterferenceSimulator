@@ -15,6 +15,8 @@ import javax.swing.WindowConstants;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.event.AxisChangeEvent;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -22,7 +24,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 public class Main {
 	static Scanner scanner = new Scanner(System.in);
 	
-	public static JProgressBar showProgressBar(int max) { return showProgressBar(max,"PROCESSING - PORT: "+Lis.instancePort); }
+	public static JProgressBar showProgressBar(int max) { return showProgressBar(max,"PROCESSING"); }
 	public static JProgressBar showProgressBar(int max,String title) { return showProgressBar(max,title,400,80); }
 	public static JProgressBar showProgressBar(int max,String title, int width, int height) {
 		JFrame f = new JFrame();
@@ -109,18 +111,36 @@ public class Main {
 		}
 		return;
 	}
+	//so the graphs displayed don't overlap completely
+	public static int offsetH = 0;
 	//display the intensity vs displacement graph
-	public static void displayGraph(double[] displacements,double[] observations) {
+	public static void displayGraph(double[] displacements,double[] observations, double upperRange, String subtitle) {
 		//JFreeChart
 		JFrame frame = new JFrame();
 		XYSeries series = new XYSeries("Readings");
 		for (int i = 0; i < displacements.length; i++) { series.add(displacements[i],observations[i]); }
-		 XYDataset dataset = new XYSeriesCollection(series);
-		 JFreeChart chart = ChartFactory.createScatterPlot("Intensity - Displacement Graph", "Displacement (mm)","Normalized Intensity", dataset);
+		XYDataset dataset = new XYSeriesCollection(series);
+		JFreeChart chart = ChartFactory.createScatterPlot("SCREEN INTENSITY CAPTURE\n-"+subtitle+"-", "Displacement (mm)","Virtual Intensity", dataset);
+		XYPlot plot = (XYPlot)chart.getPlot();
+		if (!Double.isNaN(upperRange) && upperRange > 0) { plot.getRangeAxis().setRange(-upperRange*0.03,upperRange); }
+		 @SuppressWarnings("serial")
+		ChartPanel chPanel = new ChartPanel(chart) {
+			@Override
+			 public void restoreAutoBounds(){
+				if (upperRange > 0) {
+					plot.getRangeAxis().setRange(-upperRange*0.03, upperRange);
+					plot.axisChanged(new AxisChangeEvent(plot.getRangeAxis()));	
+				}else { super.restoreAutoRangeBounds(); }
+				super.restoreAutoDomainBounds();
+			}
+		 };
 		 
-		 frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		 frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		 frame.setSize(500,500);
-		 frame.add(new ChartPanel(chart));
+		 frame.add(chPanel);
+		 frame.setLocationRelativeTo(null);
+		 frame.setLocation(frame.getLocation().x+offsetH, frame.getLocation().y);
+		 offsetH += 70;
 		 frame.setVisible(true);
 	}
 	//display a message box and exit the program

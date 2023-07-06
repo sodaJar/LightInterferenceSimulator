@@ -12,7 +12,7 @@ public class Environment {
 	public ArrayList<Observer> observers = new ArrayList<Observer>();
 	
 	public void run() {
-		JProgressBar pb = Main.showProgressBar(observers.size(), "PROCESSING - PORT: "+Lis.instancePort);
+		JProgressBar pb = Main.showProgressBar(observers.size(), "PROCESSING");
 
 		
 		int nObservers = observers.size();

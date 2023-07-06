@@ -1,6 +1,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
@@ -58,7 +59,7 @@ public class Setup {
 					currentRetracers = (ArrayList<Retracer>)nextRetracers.clone();
 				}
 				idx++; //global idx for tracking progress
-				Main.updateProgressBarTitle(pb, "PROCESSING "+setup.idx+"/"+setup.screen.retracerRoots.size()+" PORT: "+Lis.instancePort);
+				Main.updateProgressBarTitle(pb, "PROCESSING "+setup.idx+"/"+setup.screen.retracerRoots.size());
 				pb.setValue(idx);
 			}
 		}
@@ -87,18 +88,25 @@ public class Setup {
 			catch (InterruptedException e) { JOptionPane.showMessageDialog(null, "Calculation thread exception\n"+e.toString()); }
 		}
 		Main.println("All threads joined");
+		Main.disposeProgressBar(pb);
+		
 		double[] displacements = new double[screen.retracerRoots.size()];
 		double[] observations = new double[screen.retracerRoots.size()];
+		double mean = 0;
 		idx = 0;
 		for (RetracerRoot retracerRoot : screen.retracerRoots) {
-			observations[idx] = retracerRoot.vecWave.lengthSquared()/100; //the intensity at each point on screen, divide by 100 to keep numbers small
+			observations[idx] = retracerRoot.vecWave.lengthSquared()*100; //the intensity at each point on screen, multiply by a constant to make values pretty
 			displacements[idx] = Lis.m2mm(retracerRoot.displacement); //the displacement of the point relative to the screen center (left = negative)
+			mean += observations[idx];
 			idx ++;
 		}
+		mean /= observations.length;
 		Main.println("All calculations completed");
-		
-		Main.disposeProgressBar(pb);
-		Main.displayGraph(displacements, observations);
+		double[] sortedObs = observations.clone();
+		Arrays.sort(sortedObs);
+		Main.displayGraph(displacements, observations, 1.05*sortedObs[sortedObs.length-1], "default");
+		Main.displayGraph(displacements, observations, Math.min(1.05*sortedObs[sortedObs.length-1],mean*5), "crop via mean");
+		Main.displayGraph(displacements, observations, Math.min( 1.05*sortedObs[sortedObs.length-1],sortedObs[(int)(sortedObs.length*0.75)]*2.5 ), "crop via median");
 	}
 
 	public void addComponent(String componentName, Map<String,Object> properties) {

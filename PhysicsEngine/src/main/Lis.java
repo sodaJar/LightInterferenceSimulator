@@ -3,7 +3,6 @@ package main;
 public class Lis {
 	
 	//to be passed in from UI app
-	public static int instancePort = 9053; //the port to occupy
 	public static double wavelength = nm2m(650); //the global wavelength of light
 	public static int scatterCount = 10000; //number of scattered rays per hitbox
 	public static int collisionTestSize = 25; //number of test rays with retracer per hitbox
