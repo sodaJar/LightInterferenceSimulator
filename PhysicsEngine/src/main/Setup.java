@@ -48,9 +48,9 @@ public class Setup {
 				nextRetracers.clear();
 				currentRetracers.clear();
 				currentRetracers.add(retracerRoot);
-				int retraceSteps = 30;
-				while (retraceSteps > 0) { //loop until there are no nextRetracers or max steps exceeded (likely due to reflective surfaces facing each other)
-					retraceSteps --;
+				int retraceLimit = 50;
+				while (retraceLimit > 0) { //loop until there are no nextRetracers or max steps exceeded (likely due to reflective surfaces facing each other)
+					retraceLimit --;
 					nextRetracers.clear(); //prepare for calculation
 					for (Retracer r : currentRetracers) { //for each current retracer, calculate next retracers
 						nextRetracers.addAll(r.retrace(setup));
@@ -104,9 +104,9 @@ public class Setup {
 		Main.println("All calculations completed");
 		double[] sortedObs = observations.clone();
 		Arrays.sort(sortedObs);
-		Main.displayGraph(displacements, observations, 1.05*sortedObs[sortedObs.length-1], "default");
-		Main.displayGraph(displacements, observations, Math.min(1.05*sortedObs[sortedObs.length-1],mean*5), "crop via mean");
-		Main.displayGraph(displacements, observations, Math.min( 1.05*sortedObs[sortedObs.length-1],sortedObs[(int)(sortedObs.length*0.75)]*2.5 ), "crop via median");
+		Main.displayGraph(displacements, observations, 1.05*sortedObs[sortedObs.length-1], "default", -70);
+		Main.displayGraph(displacements, observations, Math.min(1.05*sortedObs[sortedObs.length-1],mean*5), "crop via mean", 0);
+		Main.displayGraph(displacements, observations, Math.min( 1.05*sortedObs[sortedObs.length-1],sortedObs[(int)(sortedObs.length*0.75)]*2.5 ), "crop via median", 70);
 	}
 
 	public void addComponent(String componentName, Map<String,Object> properties) {

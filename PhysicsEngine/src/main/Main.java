@@ -111,10 +111,8 @@ public class Main {
 		}
 		return;
 	}
-	//so the graphs displayed don't overlap completely
-	public static int offsetH = 0;
 	//display the intensity vs displacement graph
-	public static void displayGraph(double[] displacements,double[] observations, double upperRange, String subtitle) {
+	public static void displayGraph(double[] displacements,double[] observations, double upperRange, String subtitle, int offsetH) {
 		//JFreeChart
 		JFrame frame = new JFrame();
 		XYSeries series = new XYSeries("Readings");
@@ -122,26 +120,24 @@ public class Main {
 		XYDataset dataset = new XYSeriesCollection(series);
 		JFreeChart chart = ChartFactory.createScatterPlot("SCREEN INTENSITY CAPTURE\n-"+subtitle+"-", "Displacement (mm)","Virtual Intensity", dataset);
 		XYPlot plot = (XYPlot)chart.getPlot();
-		if (!Double.isNaN(upperRange) && upperRange > 0) { plot.getRangeAxis().setRange(-upperRange*0.03,upperRange); }
-		 @SuppressWarnings("serial")
-		ChartPanel chPanel = new ChartPanel(chart) {
+		if (!Double.isNaN(upperRange) && upperRange > 0) { plot.getRangeAxis().setRange(-upperRange*0.03,upperRange); } //if range length is 0, use default auto-range
+		@SuppressWarnings("serial")
+		ChartPanel chPanel = new ChartPanel(chart) { //override method because the y-axis resets to the default auto range instead of the customized range
 			@Override
-			 public void restoreAutoBounds(){
+			public void restoreAutoBounds(){
 				if (upperRange > 0) {
 					plot.getRangeAxis().setRange(-upperRange*0.03, upperRange);
-					plot.axisChanged(new AxisChangeEvent(plot.getRangeAxis()));	
-				}else { super.restoreAutoRangeBounds(); }
+					plot.axisChanged(new AxisChangeEvent(plot.getRangeAxis()));
+				}else { super.restoreAutoRangeBounds(); } //if the range is 0, use the default behavior
 				super.restoreAutoDomainBounds();
 			}
-		 };
-		 
-		 frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		 frame.setSize(500,500);
-		 frame.add(chPanel);
-		 frame.setLocationRelativeTo(null);
-		 frame.setLocation(frame.getLocation().x+offsetH, frame.getLocation().y);
-		 offsetH += 70;
-		 frame.setVisible(true);
+		};
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		frame.setSize(500,500);
+		frame.add(chPanel);
+		frame.setLocationRelativeTo(null);
+		frame.setLocation(frame.getLocation().x+offsetH, frame.getLocation().y);
+		frame.setVisible(true);
 	}
 	//display a message box and exit the program
 	public static void quitWithMessage(String message) {
