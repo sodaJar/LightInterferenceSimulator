@@ -6,10 +6,11 @@ To start the GUI program, run Lis.exe
 Guide for creating a setup and running a simulation:
 
 1. Add components via the "+" button
-2. Select a component by clicking on the "Components" menu and clicking on the component (E.g. Laser 1, Mirror 2)
-3. Edit parameters in the inspector tab
-4. Delete a component by selecting it and pressing the "Delete component" button in the inspector
-5. Click the "Launch" button
+2. Select a component by clicking on the "Components" menu and then on the unique name of the component you wish to select
+3. Edit parameters in the inspector tab, select the unit using the dropdown menu if applicable
+4. Delete a component by selecting it and pressing the "Delete component" button in the inspector tab
+5. Click the "Launch" button to run the setup
+6. Right click the calculated graphs to save as image
 
 To save or load a setup (components plus global settings), click on the "Save" or "Load" button beneath the "Launch" button
 
