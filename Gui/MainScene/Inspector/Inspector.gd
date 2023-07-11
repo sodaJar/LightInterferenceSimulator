@@ -25,7 +25,6 @@ func inspect(cNameUnique:String):
 		var val = c.properties[key]
 		p = preload("Property.tscn").instance()
 		p.cNameUnique = cNameUnique
-		p.type = val[0].substr(0,1)
 		p.propertyName = key
 		#load in args
 		for k in val[1]:

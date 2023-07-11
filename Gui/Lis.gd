@@ -54,12 +54,11 @@ const GALLERY:Dictionary = {
 	},
 	"Laser": {
 		"icon": preload("ComponentAssets/Laser.png"),
-		"description":"A laser emitting coherent light of wavelength specified globally. "+\
-		"-Power- relates to the intensity observed and does not have a real unit"+\
-		"-Beam width- is the width where the intensity is 1/e^2 (around 13.5%) of the maximum intensity"+\
-		"-Structure width- is the width of the component that blocks incoming light and emits light of any intensity",
+		"description":"A laser emitting coherent light of wavelength specified globally.\n"+\
+		"-Power- relates to the intensity observed and does not have a real unit\n"+\
+		"-Beam width- is the width where the intensity is 1/e^2 (around 13.5%) of the maximum intensity. The actual "+\
+		"width of the beam where the intensity is not near zero is twice the -beam width-",
 		"properties": {
-			"structureWidth":["f1:cm",{"min":"f1:mm"}],
 			"beamWidth":["f100:um",{"min":"f10:um","max":"f1:mm"}],
 			"power":["f100:%",{"min":"f1:%"}],
 		}
@@ -134,15 +133,15 @@ func addNewComponent(cName:String, oldComponent:Dictionary={}) -> Dictionary:
 	c.erase("icon")
 	c["name"] = cName
 	c["nameUnique"] = cNameUnique
-	if oldComponent.empty():
-		c.properties["positionX"] = ["f"+str(naturalOffset)+":cm",{}] #natural offset
-		naturalOffset += 0.005
-		c.properties["positionY"] = ["f0:cm",{}]
-		c.properties["rotation"] = ["f0:degrees",{}]
-		c.properties["quality"] = ["f100:%",{"min":"f10:%","floatStep":1}]
-	else:
+	c.properties["positionX"] = ["f"+str(naturalOffset)+":cm",{}] #natural offset
+	naturalOffset += 0.005
+	c.properties["positionY"] = ["f0:cm",{}]
+	c.properties["rotation"] = ["f0:degrees",{}]
+	c.properties["quality"] = ["f100:%",{"min":"f10:%","floatStep":1}]
+	#overwrite values according to oldComponent
+	if !oldComponent.empty():
 		for key in oldComponent.properties:
-			c.properties[key] = oldComponent.properties[key].duplicate()
+			c.properties[key][0] = oldComponent.properties[key][0]
 	#add to the list of components
 	getNode("mainScene").componentsPm.addComponent(cNameUnique)
 	#adds to the sandbox view

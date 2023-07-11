@@ -7,7 +7,6 @@ import main.Lis;
 
 public class C_Laser extends Component{
 	
-	public double structureWidth; //width where power > max power/e^2
 	public double beamWidth; //width where power > max power/e^2
 	public double power; //total power = area under the Gaussian distribution; value should be in range [0,1] (percentage)
 	
@@ -15,7 +14,7 @@ public class C_Laser extends Component{
 	
 	@Override
 	public void initialize() {
-		hitboxes.add(new HitboxSegment(-structureWidth,0, structureWidth,0,true,this));
+		hitboxes.add(new HitboxSegment(-beamWidth,0, beamWidth,0,true,this));
 		normalDistCoeff = 4*power/(beamWidth*Math.sqrt(Lis.TWO_PI));
 	}
 	@Override
