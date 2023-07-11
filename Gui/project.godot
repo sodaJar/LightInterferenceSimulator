@@ -22,6 +22,8 @@ _global_script_class_icons={
 
 config/name="Lis"
 run/main_scene="res://MainScene/MainScene.tscn"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="Lis"
 boot_splash/show_image=false
 boot_splash/image="res://Logo.png"
 boot_splash/fullsize=false

@@ -6,19 +6,16 @@ import javax.swing.JOptionPane;
 
 import environment.Ray;
 import environment.Retracer;
-import main.Lis.ToBeOverriden;
 
-public class Component extends Ray{
+public abstract class Component extends Ray{
 
 //	public String name = "";
 	public double quality = 1;
 	public double innateQuality = 1;
 	public ArrayList<HitboxSegment> hitboxes = new ArrayList<HitboxSegment>();
 	
-	@ToBeOverriden
-	public void  initialize() {}
-	@ToBeOverriden
-	public void retrace(Retracer r, ArrayList<Retracer> results) {}
+	public abstract void  initialize();
+	public abstract void retrace(Retracer r, ArrayList<Retracer> results);
 	
 	public void setProperty(String propertyName, Object value) {
 		try { getClass().getField(propertyName).set(this,value); }

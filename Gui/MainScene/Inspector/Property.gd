@@ -1,8 +1,6 @@
 extends Node2D
 
-#property name
 onready var label:RichTextLabel = $PropertyNameLabel
-#variant, could be lineEdit or checkbox
 onready var valueInputNum:SpinBox = $ValueNum
 onready var valueInputBool:CheckBox = $ValueBool
 #display when unit == default only
@@ -10,7 +8,7 @@ onready var unitButton:OptionButton = $UnitOptionButton
 #display when unit != default
 onready var unitLabel:RichTextLabel = $UnitLabel
 
-export(String,"float","int","bool") var type = "float"
+#var type
 var cNameUnique:String
 var valueArr:Array #reflects the actual string value in Lis
 #var unit:String
@@ -31,7 +29,6 @@ const unitButtonIdMap:Dictionary = {
 	"um":4,
 	"nm":5
 }
-#var lastUnitButtonUnit:String = ""
 
 func _ready():
 	label.set_bbcode(propertyName.capitalize())
@@ -69,6 +66,7 @@ func receiveValue(value:String):
 			valueInputNum.step = 1
 			valueInputNum.value = int(valueArr[1])
 		"b":
+			print(valueArr[1])
 			valueInputBool.pressed = valueArr[1] == "True"
 			valueInputNum.hide()
 			valueInputBool = $ValueBool
@@ -105,14 +103,17 @@ func _on_UnitOptionButton_item_selected(index): #when the user changes the dista
 
 func _on_ValueNum_value_changed(value): #the value of the property is changed
 	if ignoreInputValueChange: return
-	match type: #update the global list of components and respective symbols in the sandbox view
+	match valueArr[0]: #update the global list of components and respective symbols in the sandbox view
 		"f":
 			Lis.components[cNameUnique].properties[propertyName][0] = "f"+Lis.float2stringPrecise(valueInputNum.value)+":"+getUnit()
 			Lis.getNode("mainScene").updateSymbol(cNameUnique)
 		"i":
 			Lis.components[cNameUnique].properties[propertyName][0] = "i"+str(int(round(valueInputNum.value)))+":"+getUnit()
 			Lis.getNode("mainScene").updateSymbol(cNameUnique)
-		"b":
-			Lis.components[cNameUnique].properties[propertyName][0] = "b"+str(valueInputBool.pressed)+":none"
-			Lis.getNode("mainScene").updateSymbol(cNameUnique)
+	valueArr = Lis.value2array(Lis.components[cNameUnique].properties[propertyName][0])
+
+func _on_ValueBool_toggled(button_pressed):
+	if ignoreInputValueChange: return
+	Lis.components[cNameUnique].properties[propertyName][0] = "b"+str(valueInputBool.pressed)+": "
+	Lis.getNode("mainScene").updateSymbol(cNameUnique)
 	valueArr = Lis.value2array(Lis.components[cNameUnique].properties[propertyName][0])

@@ -7,18 +7,26 @@ var testScatterCount:int
 var threadCount:int
 
 const GALLERY:Dictionary = {
+	"Lens":{
+		"icon":preload("res://ComponentAssets/Lens.png"),
+		"description":"An ideal convex lens following the lens equation",
+		"properties":{
+			"lensWidth":["f5:cm",{"min":"f1:mm"}],
+			"focalLength":["f50:mm",{"min":"f1:mm"}]
+		}
+	},
 	"Mirror":{
 		"icon":preload("res://ComponentAssets/Mirror.png"),
 		"description":"A perfectly reflective mirror of negligible thickness\n-Slab width- is the length of the component",
 		"properties":{
-			"slabWidth":["f5:cm",{"min":"f1:cm"}]
+			"slabWidth":["f5:cm",{"min":"f1:mm"}]
 		}
 	},
 	"BeamSplitter":{
 		"icon":preload("res://ComponentAssets/BeamSplitter.png"),
 		"description":"A beam splitter of negligible thickness\n-Slab width- is the length of the component",
 		"properties":{
-			"slabWidth":["f5:cm",{"min":"f1:cm"}]
+			"slabWidth":["f5:cm",{"min":"f1:mm"}]
 		}
 	},
 	"SingleSlit":{
@@ -40,7 +48,7 @@ const GALLERY:Dictionary = {
 		"Increase this value if the result appears too rough or chaotic"+\
 		"\n-Quality- of the screen does not matter",
 		"properties": {
-			"screenWidth":["f3:cm",{"min":"f1:mm"}],
+			"screenWidth":["f3:cm",{"min":"f1:um"}],
 			"resolution":["i100:points",{"min":"i50:points"}]
 		},
 	},
@@ -48,10 +56,12 @@ const GALLERY:Dictionary = {
 		"icon": preload("ComponentAssets/Laser.png"),
 		"description":"A laser emitting coherent light of wavelength specified globally. "+\
 		"-Power- relates to the intensity observed and does not have a real unit"+\
-		"-Beam width- is the width where the intensity is 1/e^2 (around 13.5%) of the maximum intensity",
+		"-Beam width- is the width where the intensity is 1/e^2 (around 13.5%) of the maximum intensity"+\
+		"-Structure width- is the width of the component that blocks incoming light and emits light of any intensity",
 		"properties": {
+			"structureWidth":["f1:cm",{"min":"f1:mm"}],
 			"beamWidth":["f100:um",{"min":"f10:um","max":"f1:mm"}],
-			"power":["f100:%",{"min":"f1:%"}]
+			"power":["f100:%",{"min":"f1:%"}],
 		}
 	}
 }

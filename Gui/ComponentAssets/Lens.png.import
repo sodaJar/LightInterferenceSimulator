@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/ConvexLens.png-281e8c3d906b74c5884787d8c299ff31.stex"
+path="res://.import/Lens.png-bae21b3ddd27603cb6992eff3861ccad.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://ComponentAssets/ConvexLens.png"
-dest_files=[ "res://.import/ConvexLens.png-281e8c3d906b74c5884787d8c299ff31.stex" ]
+source_file="res://ComponentAssets/Lens.png"
+dest_files=[ "res://.import/Lens.png-bae21b3ddd27603cb6992eff3861ccad.stex" ]
 
 [params]
 

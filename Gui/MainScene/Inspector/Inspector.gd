@@ -27,7 +27,6 @@ func inspect(cNameUnique:String):
 		p.cNameUnique = cNameUnique
 		p.type = val[0].substr(0,1)
 		p.propertyName = key
-#		p.unit = val[1]
 		#load in args
 		for k in val[1]:
 			assert(p.args.has(k))

@@ -18,7 +18,7 @@ public class C_BeamSplitter extends Component{
 		r.energyPercentage /= 2; //both ray have half the energy
 		Retracer reflected = r.clone();
 		reflected.angle = -reflected.angle;
-		reflected.distanceTravelled += Lis.wavelength/2;
+		reflected.distanceTravelled += Lis.wavelength/2; //waves reflecting off a medium with a higher refractive idx shifts in phase by PI
 		results.add(reflected);
 		results.add(r);
 	}

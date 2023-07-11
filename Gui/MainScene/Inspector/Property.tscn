@@ -54,5 +54,5 @@ text = "units"
 scroll_active = false
 
 [connection signal="value_changed" from="ValueNum" to="." method="_on_ValueNum_value_changed"]
-[connection signal="toggled" from="ValueBool" to="." method="s_valueUpdated"]
+[connection signal="toggled" from="ValueBool" to="." method="_on_ValueBool_toggled"]
 [connection signal="item_selected" from="UnitOptionButton" to="." method="_on_UnitOptionButton_item_selected"]

@@ -7,7 +7,6 @@ public class RetracerRoot extends Retracer {
 	
 	public double displacement = 0;
 	
-//	public ArrayList<Vec> vecWaves = new ArrayList<Vec>();
 	public Vec vecWave = new Vec(0);
 	
 	public RetracerRoot(Vec position, double angle, boolean scattering) {

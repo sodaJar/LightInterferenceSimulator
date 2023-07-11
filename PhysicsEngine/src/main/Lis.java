@@ -8,16 +8,14 @@ public class Lis {
 	public static int collisionTestSize = 25; //number of test rays with retracer per hitbox
 	public static int threadCount = 30; //number of threads to generate
 	
-	public @interface ToBeOverriden {} //custom annotation
-	
 	public static final double TWO_PI = 2*Math.PI;
 	public static final double PI_BY_TWO = Math.PI/2;
 	
 	public static double wavelengthNormalizer; //changes wavelengths in meters to phase in radians, initialized on runtime when wavelength is passed in
 	public static double wavelengthDenormalizer; //changes phase in radians to wavelengths in meters, initialized on runtime when wavelength is passed in
 	
-	public static boolean nearEqual(double a) { return nearEqual(a,0,1e-10); }
-	public static boolean nearEqual(double a, double b) { return nearEqual(a,b,1e-10); }
+	public static boolean nearEqual(double a) { return nearEqual(a,0,1e-18); }
+	public static boolean nearEqual(double a, double b) { return nearEqual(a,b,1e-18); }
 	public static boolean nearEqual(double a, double b,double tolerance) { return Math.abs(a-b)<tolerance; } //for comparing doubles
 	
 	public enum LINE_TYPE{ //line types for intersection checking

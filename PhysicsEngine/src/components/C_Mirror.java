@@ -16,7 +16,7 @@ public class C_Mirror extends Component{
 	@Override
 	public void retrace(Retracer r, ArrayList<Retracer> results){
 		r.angle = -r.angle;
-		r.distanceTravelled += Lis.wavelength/2;
+		r.distanceTravelled += Lis.wavelength/2; //waves reflecting off a medium with a higher refractive idx shifts in phase by PI
 		results.add(r);
 	}
 	
