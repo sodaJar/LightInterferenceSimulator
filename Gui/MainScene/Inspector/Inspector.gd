@@ -7,11 +7,8 @@ onready var descLabel:RichTextLabel = $DescriptionLabel
 
 var component:Dictionary
 
-#var propertyCache:Dictionary = {}
-
 func inspect(cNameUnique:String):
 	var c:Dictionary = Lis.components[cNameUnique]
-#	if !propertyCache.has(cNameUnique): propertyCache[cNameUnique] = {}
 	deleteButton.disabled = cNameUnique == "Screen"
 	Lis.getNode("mainScene").selectSymbol(cNameUnique)
 	titleLabel.set_bbcode("[center]Inspector ("+cNameUnique.capitalize()+")")

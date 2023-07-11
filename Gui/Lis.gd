@@ -6,6 +6,7 @@ var scatterDensity:int
 var testScatterCount:int
 var threadCount:int
 
+#global dictionary of all available components and their information
 const GALLERY:Dictionary = {
 	"Lens":{
 		"icon":preload("res://ComponentAssets/Lens.png"),
@@ -84,6 +85,7 @@ func getDataArray() -> Array:
 		r.append(props)
 	return r
 
+#map of units used for conversion between them
 const unitMap = {
 	"": 1,
 	"%": 0.01,
@@ -97,29 +99,37 @@ const unitMap = {
 	"nm": 1e-9,
 }
 
+#default units are units of distance
 func isUnitDefault(unit:String)->bool: return unit in ["m","dm","cm","mm","um","nm"]
 func value2array(value:String) -> Array: #splits a string value in the standard format to an array
 	var seperatorIndex:int = value.find(":") #colon seperates the numerical value and the unit
 	assert(seperatorIndex>0)
 	return [value.substr(0,1),value.substr(1,seperatorIndex-1),value.substr(seperatorIndex+1)]
-func parseValue(valueArr:Array):
+func parseValue(valueArr:Array): #gets the native value of the string value
 	match valueArr[0]:
 		"f": return float(valueArr[1])
 		"i": return int(valueArr[1])
 		"b": return valueArr[1] == "True"
-func getNode(group:String)->Node: return get_tree().get_nodes_in_group(group)[0]
-func getNodes(group:String)->Array: return get_tree().get_nodes_in_group(group)
+func getNode(group:String)->Node: return get_tree().get_nodes_in_group(group)[0] #get node by group name
+func getNodes(group:String)->Array: return get_tree().get_nodes_in_group(group) #get nodes by group name
+#deunify means to convert the standard unit to another one
 func deunifyTo(u:float,unit:String)->float: return u/unitMap[unit if unitMap.has(unit) else ""]
+#unify means to convert the any unit to the standard one (e.g. meter, radian)
 func unifyFrom(n:float,unit:String)->float: return n*unitMap[unit if unitMap.has(unit) else ""]
+#unify then deunify
 func changeUnit(n:float,oldUnit:String,newUnit:String)->float: return deunifyTo(unifyFrom(n,oldUnit),newUnit)
+#custom float to string to overcome str() precision limitations
 func float2stringPrecise(f:float)->String: return "%.64f" % f
 
+#the global container of all added components in the setup
 var components:Dictionary = {}
 var naturalOffset:float = 0
+#add a new component by duplicating and processing the component from GALLERY
 func addNewComponent(cName:String, oldComponent:Dictionary={}) -> Dictionary:
 	var cNameUnique
 	if cName=="Screen": cNameUnique = cName #there can only be one screen
-	elif oldComponent.empty():
+	#oldComponent is used for loading components from a file
+	elif oldComponent.empty(): #creating a component from scratch, generate a unique name
 		var suffix:int = 1
 		var limit:int = 1000
 		while Lis.components.has(cName + str(suffix)):
@@ -128,15 +138,17 @@ func addNewComponent(cName:String, oldComponent:Dictionary={}) -> Dictionary:
 			limit -= 1
 		cNameUnique = cName+str(suffix)
 	else: cNameUnique = oldComponent.nameUnique
-	components[cNameUnique] = Lis.GALLERY[cName].duplicate(true)
+	components[cNameUnique] = Lis.GALLERY[cName].duplicate(true) #create a deep copy
 	var c:Dictionary = components[cNameUnique]
+	#remove unnecessary icon property
 	c.erase("icon")
+	#set properties common for all components (e.g. position and rotation)
 	c["name"] = cName
 	c["nameUnique"] = cNameUnique
 	c.properties["positionX"] = ["f"+str(naturalOffset)+":cm",{}] #natural offset
 	naturalOffset += 0.005
 	c.properties["positionY"] = ["f0:cm",{}]
-	c.properties["rotation"] = ["f0:degrees",{}]
+	c.properties["rotation"] = ["f0:degrees",{"floatStep":1e-5}]
 	c.properties["quality"] = ["f100:%",{"min":"f10:%","floatStep":1}]
 	#overwrite values according to oldComponent
 	if !oldComponent.empty():
@@ -144,7 +156,7 @@ func addNewComponent(cName:String, oldComponent:Dictionary={}) -> Dictionary:
 			c.properties[key][0] = oldComponent.properties[key][0]
 	#add to the list of components
 	getNode("mainScene").componentsPm.addComponent(cNameUnique)
-	#adds to the sandbox view
+	#add to the sandbox view
 	getNode("mainScene").addSymbol(cNameUnique)
 	return components[cNameUnique]
 
@@ -154,17 +166,16 @@ func deleteComponent(cNameUnique:String):
 	components.erase(cNameUnique)
 	if components.has("Screen"): getNode("inspector").inspect("Screen")
 
-const SAVE_PATH:String = "user://data/"#"./data/"
-const DEFAULT_FILE_NAME:String = "save.tres"
-
-func saveDataAbs(data:Dictionary,path:String) -> int: #saves a dictionary to an absolute path
+#saves a dictionary to a file with given path
+func saveDataAbs(data:Dictionary,path:String) -> int:
 	var dir:Directory = Directory.new()
 	var e = dir.open(".")
-	assert(e == OK,"Failed to open executable directory: Code "+str(e)) #writes message to log file
+	assert(e == OK,"Failed to open executable directory: Code "+str(e)) #write message to log file
 	assert(dir.dir_exists(path.get_base_dir()),"Path input invalid")
 	var file = Data.new()
 	file.data = data
-	return ResourceSaver.save(path,file) #returns an int error code
+	return ResourceSaver.save(path,file) #return an int error code
+#loads a dictionary from a file
 func loadDataAbs(path:String):
 	var resource = ResourceLoader.load(path)
 	if !is_instance_valid(resource): return null #if the file failed to load

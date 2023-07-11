@@ -33,6 +33,7 @@ margin_left = 163.0
 margin_top = 1.0
 margin_right = 209.0
 margin_bottom = 74.0
+hint_tooltip = "Add a new component to the setup"
 theme = ExtResource( 5 )
 custom_fonts/font = ExtResource( 3 )
 text = "+"

@@ -1,11 +1,14 @@
 extends PopupMenu
 
+#the id of the next component to be added
 var idCounter:int = 0
-
+#map of the unique component name and its id
 var idMap:Dictionary = {}
 
 func addComponent(cNameUnique:String):
+	#add new item to menu
 	add_item(cNameUnique.capitalize(),idCounter)
+	#set icon for the added item
 	set_item_icon(get_item_index(idCounter),Lis.GALLERY[Lis.components[cNameUnique].name].icon)
 	idMap[cNameUnique] = idCounter
 	idCounter += 1

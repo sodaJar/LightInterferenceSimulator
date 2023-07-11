@@ -1,6 +1,6 @@
 extends Node2D
 
-func _ready():
+func _ready(): #update Lis when initialized
 	_on_WavelengthSpinBox_value_changed($WavelengthSpinBox.value)
 	_on_ScDensitySpinBox_value_changed($ScDensitySpinBox.value)
 	_on_ColTestDensitySpinBox_value_changed($ColTestDensitySpinBox.value)
