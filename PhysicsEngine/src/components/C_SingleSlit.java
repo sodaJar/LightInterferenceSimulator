@@ -6,6 +6,7 @@ import environment.Retracer;
 import main.Lis;
 
 public class C_SingleSlit extends Component {
+	
 	public double obstacleWidth;
 	public double slitWidth;
 	
@@ -19,15 +20,9 @@ public class C_SingleSlit extends Component {
 	}
 	@Override
 	public void retrace(Retracer r, ArrayList<Retracer> results){
-//		Main.println("Intersects with single slit at x = "+r.position.x);
-//		Main.println("Slit hitbox L "+hitboxes.get(1).getDirVec().length());
 		if (Math.abs(r.position.x)>slitWidth/2) { return; }
-//		if (Math.abs(r.position.x)>slitWidth*2) { return; }
-//		if (Math.abs(r.position.x)<slitWidth) { return; }
 		r.angle = r.angle>0?Lis.PI_BY_TWO:-Lis.PI_BY_TWO;
 		r.scattering = true;
-//		Main.println("Add to single slit component results for x = "+r.position.x);
 		results.add(r);
 	}
-	
 }

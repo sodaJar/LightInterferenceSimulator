@@ -9,7 +9,6 @@ import environment.Retracer;
 
 public abstract class Component extends Ray{
 
-//	public String name = "";
 	public double quality = 1;
 	public double innateQuality = 1;
 	public ArrayList<HitboxSegment> hitboxes = new ArrayList<HitboxSegment>();
@@ -27,5 +26,4 @@ public abstract class Component extends Ray{
 		catch (Exception e) { JOptionPane.showMessageDialog(null, e.toString()); }
 		return null;
 	}
-	
 }

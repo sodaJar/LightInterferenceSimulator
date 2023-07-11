@@ -167,7 +167,7 @@ public class Retracer extends Ray {
 					if (!hb.responsive) { continue; } //to prevent the retracer from detecting intersection with the same hitbox over and over
 					Vec intersection = Lis.getIntersection(hb.pos1, hb.getDirVec(), position, dir, Lis.LINE_TYPE.SEGMENT, Lis.LINE_TYPE.RAY);
 					if (intersection == null || intersection.nearEqual(position,1e-9)) { continue; }
-					double distanceSquared = position.distanceSquaredTo(intersection); //DEBUGGED
+					double distanceSquared = position.distanceSquaredTo(intersection);
 					if (distanceSquared < minDistanceSquared) {
 						minDistanceSquared = distanceSquared;
 						closestIntersection = intersection;
@@ -179,7 +179,7 @@ public class Retracer extends Ray {
 			//create a clone at point of intersection and accumulate distance
 			Retracer nextR = clone();
 			//assume component at Vec(0) and angle 0, normalize incoming ray (angle already fully normalized)
-			nextR.position = closestIntersection.clone(); //DEBUGGED
+			nextR.position = closestIntersection.clone();
 			nextR.position.subtract(closestComponent.position);
 			nextR.position.rotate(-closestComponent.angle);
 			nextR.angle = Lis.normalizeAngle(angle - closestComponent.angle); //each scattered ray has a different angle
@@ -203,5 +203,5 @@ public class Retracer extends Ray {
 		return nextRetracers;
 	}
 	
-	public Retracer clone() { return new Retracer(position.clone(),angle,scattering,sourcePower,energyPercentage,distanceTravelled,ignoreComponent,root); } //DEBUGGED
+	public Retracer clone() { return new Retracer(position.clone(),angle,scattering,sourcePower,energyPercentage,distanceTravelled,ignoreComponent,root); }
 }

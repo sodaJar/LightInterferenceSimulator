@@ -22,6 +22,4 @@ public class C_BeamSplitter extends Component{
 		results.add(reflected);
 		results.add(r);
 	}
-	
-
 }

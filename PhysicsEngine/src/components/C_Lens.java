@@ -23,5 +23,4 @@ public class C_Lens extends Component {
 		r.angle = r.position.to(new Vec(focalLength*Math.tan(incidentAngle),Math.signum(r.angle)*focalLength)).angle();
 		results.add(r);
 	}
-
 }
