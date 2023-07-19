@@ -1,7 +1,6 @@
-
-
 --------------------------------------------------------------
 # Light Interference Simulator User Manual
+
 IBDP Computer Science Internal Assessment
 
 --------------------------------------------------------------
@@ -25,7 +24,7 @@ List of global settings:
 
 Light Wavelength - As the simulator supports only light of a single wavelength, it is adjusted via this global setting
 
-Calculation density - The number of rays into which a scattering ray scatters onto a component exposed to the ray, the angle between the furthest scattered rays is almost PI
+Scattering density - The number of rays into which a scattering ray scatters onto a component exposed to the ray, the angle between the furthest scattered rays is almost PI
 
 Collision test density - The number of segments used to check for obstacles between a component and a ray. A value of 30-50 is generally sufficient unless components vary greatly in size
 
