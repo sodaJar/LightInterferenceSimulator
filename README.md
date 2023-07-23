@@ -34,7 +34,7 @@ Calculation thread count - Used for multithreading. Equals the number of threads
 
 If the graph appears incorrect, you can try to:
 
-1. double check if each component has the correct parameters
+1. double check if each component has the correct parameters (components must not intersect!)
 2. increase the resolution of the screen
 3. decrease or increase the screen width
 4. increase the scattering density
