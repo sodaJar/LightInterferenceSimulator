@@ -13,7 +13,8 @@ const GALLERY:Dictionary = {
 		"description":"An ideal convex lens following the lens equation",
 		"properties":{
 			"lensWidth":["f5:cm",{"min":"f1:mm"}],
-			"focalLength":["f50:mm",{"min":"f1:mm"}]
+			"focalLength":["f50:mm",{"min":"f1:mm"}],
+			"compensating":["bTrue:bool",{}]
 		}
 	},
 	"Mirror":{
@@ -84,6 +85,23 @@ func getDataArray() -> Array:
 			props += pName+" "+valArr[0]+( str(val) if (val is bool||val is int) else float2stringPrecise(unifyFrom(val,valArr[2])) )+";"
 		r.append(props)
 	return r
+func getDataArrayAsJavaCode() -> String:
+	var r:String = "new String[]{"
+	r += "\"f"+str(wavelength)+"\",\"i"+str(scatterDensity)+\
+	"\",\"i"+str(testScatterCount)+"\",\"i"+str(threadCount)+"\"" #the first few items are the global settings
+	for key in components: #then, alternate between component name and properties
+		var c = components[key]
+		r += ",\""+c.name+"\""
+		var props:String = ""
+		for pName in c.properties:
+			var p = c.properties[pName]
+			var valArr:Array = value2array(p[0])
+			var val = parseValue(valArr)
+			#the format of properties: [property1Name] [value1];[property2Name] [value2];
+			#properties are seperated by semi-colons. Name and value are seperated with a whitespace
+			props += pName+" "+valArr[0]+( str(val) if (val is bool||val is int) else float2stringPrecise(unifyFrom(val,valArr[2])) )+";"
+		r += ",\""+props+"\""
+	return r+"}"
 
 #map of units used for conversion between them
 const unitMap = {
@@ -152,8 +170,11 @@ func addNewComponent(cName:String, oldComponent:Dictionary={}) -> Dictionary:
 	c.properties["quality"] = ["f100:%",{"min":"f10:%","floatStep":1}]
 	#overwrite values according to oldComponent
 	if !oldComponent.empty():
-		for key in oldComponent.properties:
-			c.properties[key][0] = oldComponent.properties[key][0]
+		for key in c.properties:
+			if oldComponent.properties.has(key): c.properties[key][0] = oldComponent.properties[key][0]
+			else: print("Emergent property: "+key)
+#		for key in oldComponent.properties:
+#			c.properties[key][0] = oldComponent.properties[key][0]
 	#add to the list of components
 	getNode("mainScene").componentsPm.addComponent(cNameUnique)
 	#add to the sandbox view

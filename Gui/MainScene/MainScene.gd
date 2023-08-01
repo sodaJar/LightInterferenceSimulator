@@ -28,6 +28,7 @@ func _ready(): #add initial screen component
 func _on_RunButton_pressed():
 	runButton.disabled = true
 	#call physics server
+	print(Lis.getDataArrayAsJavaCode())
 	OS.execute(OS.get_executable_path().get_base_dir()+"/PhysicsEngine/LisPhE.exe",Lis.getDataArray(),false)
 	yield(get_tree().create_timer(1),"timeout")
 	runButton.disabled = false
