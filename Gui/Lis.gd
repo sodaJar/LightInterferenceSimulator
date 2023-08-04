@@ -10,7 +10,8 @@ var threadCount:int
 const GALLERY:Dictionary = {
 	"Lens":{
 		"icon":preload("res://ComponentAssets/Lens.png"),
-		"description":"An ideal convex lens following the lens equation",
+		"description":"An ideal convex lens following the lens equation\nIf -compensating- is true, "+\
+		"parallel light rays reach the focal plane with no path difference",
 		"properties":{
 			"lensWidth":["f5:cm",{"min":"f1:mm"}],
 			"focalLength":["f50:mm",{"min":"f1:mm"}],
@@ -38,14 +39,13 @@ const GALLERY:Dictionary = {
 		"The obstacle has negligible thickness and absorbs all light. If -slit width- if greater than "+\
 		"obstacle width, the component is ignored",
 		"properties":{
-			"obstacleWidth":["f1:m",{"min":"f10:cm"}],
-			"slitWidth":["f5000:nm",{"min":"f1:nm"}]
+			"obstacleWidth":["f1:m",{"min":"f1:cm"}],
+			"slitWidth":["f5000:nm",{"min":"f0:nm"}]
 		}
 	},
 	"Screen": {
 		"icon": preload("ComponentAssets/Screen.png"),
-		"description":"The one-sided photosensitive screen of negligible thickness that detects the intensity of incoming light rays. "+\
-		"The output graph will be generated from what this screen observes. "+\
+		"description":"The one-sided photosensitive screen that detects the intensity of incoming light rays.\n"+\
 		"There can only be one screen\n-Resolution- is the number of points on the resulting graph. "+\
 		"Increase this value if the result appears too rough or chaotic"+\
 		"\n-Quality- of the screen does not matter",
@@ -58,11 +58,13 @@ const GALLERY:Dictionary = {
 		"icon": preload("ComponentAssets/Laser.png"),
 		"description":"A laser emitting coherent light of wavelength specified globally.\n"+\
 		"-Power- relates to the intensity observed and does not have a real unit\n"+\
-		"-Beam width- is the width where the intensity is 1/e^2 (around 13.5%) of the maximum intensity. The actual "+\
-		"width of the beam where the intensity is not near zero is twice the -beam width-",
+		"-Beam width- is the width where the power is above around 13.5% of the maximum power. The actual "+\
+		"width of the laser device that blocks passing rays is twice the -beam width-\n"+\
+		"The smaller the -scattering angle-, the more collimated the light beam",
 		"properties": {
 			"beamWidth":["f100:um",{"min":"f10:um","max":"f1:mm"}],
 			"power":["f100:%",{"min":"f1:%"}],
+			"scatteringAngle":["f30:degrees",{"min":"f1:degrees","max":"f180:degrees"}]
 		}
 	}
 }

@@ -26,7 +26,7 @@ public class C_Lens extends Component {
 		//compensate for path difference on the focal plane introduced by the lens
 		if (compensating) {
 			final Vec emissionPoint = new Vec(r.position.x-focalLength*Math.tan(incidentAngle),focalLength);
-			r.distanceTravelled += emissionPoint.distanceTo(new Vec(-Math.signum(emissionPoint.x)*lensWidth/2,0))-r.position.distanceTo(emissionPoint);
+			r.distanceTravelled += emissionPoint.distanceTo(new Vec(emissionPoint.x==0?lensWidth/2:(-Math.signum(emissionPoint.x)*lensWidth/2),0))-r.position.distanceTo(emissionPoint);
 		}
 		results.add(r);
 	}

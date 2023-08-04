@@ -24,9 +24,12 @@ public class HitboxSegment {
 		return pos1.to(pos2);
 	}
 	public HitboxSegment clone() {
-		return new HitboxSegment(pos1, pos2, responsive, owner);
+		return new HitboxSegment(pos1.clone(), pos2.clone(), responsive, owner);
 	}
 	public HitboxSegmentPuppet newPuppet() {
-		return new HitboxSegmentPuppet(pos1, pos2, responsive, owner, this);
+		return new HitboxSegmentPuppet(pos1.clone(), pos2.clone(), responsive, owner, this);
+	}
+	public String toString() {
+		return owner.getClass()+" "+super.toString()+" "+pos1.toString()+" "+pos2.toString();
 	}
 }

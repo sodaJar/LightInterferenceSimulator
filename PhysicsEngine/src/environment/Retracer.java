@@ -98,11 +98,11 @@ public class Retracer extends Ray {
 					boolean pos2Covering = (intersection2 == null) ? false : (position.distanceSquaredTo(intersection2)>position.distanceSquaredTo(hitbox.pos2));
 					if (pos1Covering && pos2Covering) { //if the hitbox is covering a middle part of another hitbox
 						HitboxSegmentPuppet extraHitbox = withHitbox.clone(); //produce an extra puppet because the original has a gap in the middle
-						withHitbox.pos2.set(intersection1);
-						extraHitbox.pos1.set(intersection2);
+						withHitbox.pos2 = intersection1;
+						extraHitbox.pos1 = intersection2;
 						extraPuppets.add(extraHitbox);
-					}else if(pos1Covering) { withHitbox.pos2.set(intersection1); } //pos1 covers another hitbox
-					else if(pos2Covering) { withHitbox.pos1.set(intersection2); } //pos2 covers another hitbox
+					}else if(pos1Covering) { withHitbox.pos2 = intersection1; } //pos1 covers another hitbox
+					else if(pos2Covering) { withHitbox.pos1 = intersection2; } //pos2 covers another hitbox
 					//else would imply that the hitbox is being covered by another, in which case we don't need to do anything
 				}
 			}

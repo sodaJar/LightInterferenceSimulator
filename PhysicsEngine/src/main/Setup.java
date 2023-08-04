@@ -65,7 +65,7 @@ public class Setup {
 		}
 	}
 	
-	public void run() { //start the setup by retracing all points (root retracers) on the screen 
+	public void run() { //start the setup by retracing all points (root retracers) on the screen
 		JProgressBar pb = Main.showProgressBar(screen.retracerRoots.size()-1,"PREPARING THREADS");
 		//when the user closes the progress bar, the program should exit
 		Main.getComponentJFrame(pb).setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

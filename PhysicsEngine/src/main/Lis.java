@@ -14,8 +14,8 @@ public class Lis {
 	public static double wavelengthNormalizer; //changes wavelengths in meters to phase in radians, initialized on runtime when wavelength is passed in
 	public static double wavelengthDenormalizer; //changes phase in radians to wavelengths in meters, initialized on runtime when wavelength is passed in
 	
-	public static boolean nearEqual(double a) { return nearEqual(a,0,1e-18); }
-	public static boolean nearEqual(double a, double b) { return nearEqual(a,b,1e-18); }
+	public static boolean nearEqual(double a) { return nearEqual(a,0,1e-16); }
+	public static boolean nearEqual(double a, double b) { return nearEqual(a,b,1e-16); }
 	public static boolean nearEqual(double a, double b,double tolerance) { return Math.abs(a-b)<tolerance; } //for comparing doubles
 	
 	public enum LINE_TYPE{ //line types for intersection checking

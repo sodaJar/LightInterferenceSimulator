@@ -9,6 +9,7 @@ public class C_Laser extends Component{
 	
 	public double beamWidth; //width where power > max power/e^2
 	public double power; //total power = area under the Gaussian distribution; value should be in range [0,1] (percentage)
+	public double scatteringAngle; //the FOV of the laser, less angle = more collimation
 	
 	private double normalDistCoeff;
 	
@@ -19,8 +20,11 @@ public class C_Laser extends Component{
 	}
 	@Override
 	public void retrace(Retracer r, ArrayList<Retracer> results) {
-		if (r.angle < 0) {
+		if (r.angle < -Lis.PI_BY_TWO+scatteringAngle/2 && r.angle > -Lis.PI_BY_TWO-scatteringAngle/2) {
 			r.sourcePower = getPowerAt(r.position.x);
+			//path difference correction for plane waves
+			final double correctionAngle = r.angle + Lis.PI_BY_TWO;
+			r.distanceTravelled -= r.position.x*Math.sin(correctionAngle);
 			results.add(r);
 		}
 	}
