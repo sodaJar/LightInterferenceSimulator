@@ -15,7 +15,7 @@ public class C_Laser extends Component{
 	
 	@Override
 	public void initialize() {
-		hitboxes.add(new HitboxSegment(-beamWidth,0, beamWidth,0,true,this));
+		hitboxes.add(new HitboxSegment(-beamWidth/2,0, beamWidth/2,0,true,this));
 		normalDistCoeff = 4*power/(beamWidth*Math.sqrt(Lis.TWO_PI));
 	}
 	@Override
