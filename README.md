@@ -1,7 +1,6 @@
 --------------------------------------------------------------
 # Light Interference Simulator User Manual
-
-IBDP Computer Science Internal Assessment
+ZLQ 2023
 
 --------------------------------------------------------------
 
@@ -42,4 +41,4 @@ If the graph appears incorrect, you can try to:
 
 --------------------------------------------------------------
 
-W. 2023
+IBDP Computer Science Internal Assessment
