@@ -28,34 +28,6 @@ color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
 [node name="Ui" type="CanvasLayer" parent="."]
 layer = 10
 
-[node name="AddComponentMenuButton" type="MenuButton" parent="Ui"]
-margin_left = 163.0
-margin_top = 1.0
-margin_right = 209.0
-margin_bottom = 74.0
-hint_tooltip = "Add a new component to the setup"
-theme = ExtResource( 5 )
-custom_fonts/font = ExtResource( 3 )
-text = "+"
-script = ExtResource( 6 )
-
-[node name="ComponentsButton" type="Button" parent="Ui"]
-margin_left = 18.0
-margin_top = 17.0
-margin_right = 160.0
-margin_bottom = 60.0
-theme = ExtResource( 5 )
-text = "COMPONENTS"
-
-[node name="ComponentsPopupMenu" type="PopupMenu" parent="Ui"]
-margin_left = 15.0
-margin_top = 67.0
-margin_right = 226.0
-margin_bottom = 107.0
-theme = ExtResource( 5 )
-hide_on_state_item_selection = true
-script = ExtResource( 2 )
-
 [node name="ColorRect2" type="ColorRect" parent="Ui"]
 margin_left = 687.0
 margin_top = -92.0
@@ -132,6 +104,7 @@ margin_bottom = 56.0
 theme = ExtResource( 5 )
 min_value = 10.0
 max_value = 1e+06
+step = 0.1
 value = 650.0
 allow_greater = true
 align = 1
@@ -242,6 +215,35 @@ hint_tooltip = "Save the current set of global settings, components, and their p
 theme = ExtResource( 5 )
 text = "Save"
 
+[node name="ComponentsButton" type="Button" parent="Ui"]
+margin_left = 18.0
+margin_top = 17.0
+margin_right = 160.0
+margin_bottom = 60.0
+theme = ExtResource( 5 )
+text = "COMPONENTS"
+
+[node name="AddComponentMenuButton" type="MenuButton" parent="Ui"]
+margin_left = 163.0
+margin_top = 1.0
+margin_right = 209.0
+margin_bottom = 74.0
+hint_tooltip = "Add a new component to the setup"
+theme = ExtResource( 5 )
+custom_fonts/font = ExtResource( 3 )
+text = "+"
+script = ExtResource( 6 )
+
+[node name="ComponentsPopupMenu" type="PopupMenu" parent="Ui"]
+visible = true
+margin_left = 15.0
+margin_top = 67.0
+margin_right = 226.0
+margin_bottom = 107.0
+theme = ExtResource( 5 )
+hide_on_state_item_selection = true
+script = ExtResource( 2 )
+
 [node name="SaveLoadFileDialog" type="FileDialog" parent="Ui"]
 margin_left = 172.0
 margin_top = 120.0
@@ -258,8 +260,6 @@ script = ExtResource( 9 )
 [node name="Camera2D" type="Camera2D" parent="." groups=["camera"]]
 current = true
 
-[connection signal="button_up" from="Ui/ComponentsButton" to="Ui/ComponentsPopupMenu" method="_on_ComponentsButton_button_up"]
-[connection signal="index_pressed" from="Ui/ComponentsPopupMenu" to="Ui/ComponentsPopupMenu" method="_on_ComponentsPopupMenu_index_pressed"]
 [connection signal="button_up" from="Ui/Inspector/DeleteButton" to="Ui/Inspector" method="_on_DeleteButton_button_up"]
 [connection signal="value_changed" from="Ui/Globals/WavelengthSpinBox" to="Ui/Globals" method="_on_WavelengthSpinBox_value_changed"]
 [connection signal="value_changed" from="Ui/Globals/ScDensitySpinBox" to="Ui/Globals" method="_on_ScDensitySpinBox_value_changed"]
@@ -268,4 +268,6 @@ current = true
 [connection signal="pressed" from="Ui/RunButton" to="." method="_on_RunButton_pressed"]
 [connection signal="button_up" from="Ui/LoadButton" to="Ui/SaveLoadFileDialog" method="_on_LoadButton_button_up"]
 [connection signal="button_up" from="Ui/SaveButton" to="Ui/SaveLoadFileDialog" method="_on_SaveButton_button_up"]
+[connection signal="button_up" from="Ui/ComponentsButton" to="Ui/ComponentsPopupMenu" method="_on_ComponentsButton_button_up"]
+[connection signal="index_pressed" from="Ui/ComponentsPopupMenu" to="Ui/ComponentsPopupMenu" method="_on_ComponentsPopupMenu_index_pressed"]
 [connection signal="file_selected" from="Ui/SaveLoadFileDialog" to="Ui/SaveLoadFileDialog" method="_on_SaveLoadFileDialog_file_selected"]

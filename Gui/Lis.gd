@@ -45,8 +45,8 @@ const GALLERY:Dictionary = {
 	},
 	"Screen": {
 		"icon": preload("ComponentAssets/Screen.png"),
-		"description":"The one-sided photosensitive screen that detects the intensity of incoming light rays.\n"+\
-		"There can only be one screen\n-Resolution- is the number of points on the resulting graph. "+\
+		"description":"The one-sided screen that captures the intensity of incoming light. "+\
+		"There can only be one screen in the setup\n-Resolution- is the number of points on the resulting graph. "+\
 		"Increase this value if the result appears too rough or chaotic"+\
 		"\n-Quality- of the screen does not matter",
 		"properties": {
@@ -60,11 +60,11 @@ const GALLERY:Dictionary = {
 		"-Power- relates to the intensity observed and does not have a real unit\n"+\
 		"-Beam width- is the width where the power is above around 13.5% of the maximum power. The actual "+\
 		"width of the laser device that blocks passing rays is twice the -beam width-\n"+\
-		"The smaller the -scattering angle-, the more collimated the light beam",
+		"Decreasing the -scattering angle- causes the light beam to be more concentrated",
 		"properties": {
-			"beamWidth":["f100:um",{"min":"f10:um","max":"f1:mm"}],
+			"beamWidth":["f100:um",{"min":"f100:nm","max":"f1:mm"}],
 			"power":["f100:%",{"min":"f1:%"}],
-			"scatteringAngle":["f30:degrees",{"min":"f1:degrees","max":"f180:degrees"}]
+			"scatteringAngle":["f30:degrees",{"min":"f1:degrees","max":"f180:degrees"}],
 		}
 	}
 }

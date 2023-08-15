@@ -16,15 +16,15 @@ public class C_Laser extends Component{
 	@Override
 	public void initialize() {
 		hitboxes.add(new HitboxSegment(-beamWidth/2,0, beamWidth/2,0,true,this));
-		normalDistCoeff = 4*power/(beamWidth*Math.sqrt(Lis.TWO_PI));
+		normalDistCoeff = 400*power/(beamWidth*Math.sqrt(Lis.TWO_PI));
 	}
 	@Override
 	public void retrace(Retracer r, ArrayList<Retracer> results) {
 		if (r.angle < -Lis.PI_BY_TWO+scatteringAngle/2 && r.angle > -Lis.PI_BY_TWO-scatteringAngle/2) {
-			r.sourcePower = getPowerAt(r.position.x);
 			//path difference correction for plane waves
 			final double correctionAngle = r.angle + Lis.PI_BY_TWO;
 			r.distanceTravelled -= r.position.x*Math.sin(correctionAngle);
+			r.sourcePower = getPowerAt(r.position.x);
 			results.add(r);
 		}
 	}

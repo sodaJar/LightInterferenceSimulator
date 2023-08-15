@@ -43,14 +43,13 @@ public class Setup {
 			this.pb = pb;
 		}
 
-		@SuppressWarnings("unchecked")
-		@Override
+		@SuppressWarnings("unchecked") @Override
 		public void run() { // the run function of the thread
 			for (RetracerRoot retracerRoot : retracerRoots) {
 				nextRetracers.clear();
 				currentRetracers.clear();
 				currentRetracers.add(retracerRoot);
-				int retraceLimit = 20;
+				int retraceLimit = 50;
 				while (retraceLimit > 0) { // loop until there are no nextRetracers or max steps exceeded (likely due to reflective surfaces facing each other)
 					retraceLimit--;
 					nextRetracers.clear(); // prepare for calculation
@@ -103,8 +102,7 @@ public class Setup {
 		double mean = 0;
 		idx = 0;
 		for (RetracerRoot retracerRoot : screen.retracerRoots) {
-			// the intensity at each point on screen, multiply by a constant to make values pretty
-			observations[idx] = retracerRoot.vecWave.lengthSquared() * 100;
+			observations[idx] = retracerRoot.vecWave.lengthSquared();
 			// the displacement of the point relative to the screen center (left = negative)
 			displacements[idx] = Lis.m2mm(retracerRoot.displacement);
 			mean += observations[idx];
@@ -115,11 +113,8 @@ public class Setup {
 		double[] sortedObs = observations.clone();
 		Arrays.sort(sortedObs);
 		Main.displayGraph(displacements, observations, 1.05 * sortedObs[sortedObs.length - 1], "default", -70);
-		Main.displayGraph(displacements, observations, Math.min(1.05 * sortedObs[sortedObs.length - 1], mean * 5),
-				"crop via mean", 0);
-		Main.displayGraph(displacements, observations,
-				Math.min(1.05 * sortedObs[sortedObs.length - 1], sortedObs[(int) (sortedObs.length * 0.75)] * 2.5),
-				"crop via median", 70);
+		Main.displayGraph(displacements, observations, Math.min(1.05 * sortedObs[sortedObs.length - 1], mean * 5), "crop via mean", 0);
+		Main.displayGraph(displacements, observations, Math.min(1.05 * sortedObs[sortedObs.length - 1], sortedObs[(int) (sortedObs.length * 0.75)] * 2.5), "crop via median", 70);
 	}
 
 	public void addComponent(String componentName, Map<String, Object> properties) {
