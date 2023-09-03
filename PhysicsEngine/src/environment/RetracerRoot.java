@@ -12,7 +12,7 @@ public class RetracerRoot extends Retracer {
 	public RetracerRoot(Vec position, double angle, boolean scattering) {
 		super(position, angle, scattering);
 	}
-	public RetracerRoot(Vec position, double angle, boolean scattering, double sourcePower, double energyPercentage,double distanceTravelled, Component ignoreComponent, RetracerRoot root) {
+	public RetracerRoot(Vec position, double angle, boolean scattering, double sourcePower, double energyPercentage, double distanceTravelled, Component ignoreComponent, RetracerRoot root) {
 		super(position, angle, scattering, sourcePower, energyPercentage, distanceTravelled, ignoreComponent, root);
 	}
 }
