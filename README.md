@@ -1,6 +1,6 @@
 --------------------------------------------------------------
-# Light Interference Simulator User Manual
-W 2023
+# Light Interference Simulation User Manual
+IB Internal Assessment
 
 --------------------------------------------------------------
 
@@ -41,4 +41,4 @@ If the graph appears incorrect, you can try to:
 
 --------------------------------------------------------------
 
-IBDP Computer Science Internal Assessment
+W. 2023
