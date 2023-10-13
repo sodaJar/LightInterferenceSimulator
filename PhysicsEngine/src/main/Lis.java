@@ -18,6 +18,9 @@ public class Lis {
 	public static boolean nearEqual(double a, double b) { return nearEqual(a,b,1e-16); }
 	public static boolean nearEqual(double a, double b,double tolerance) { return Math.abs(a-b)<tolerance; } //for comparing doubles
 	
+	//algorithm taken from <https://stackoverflow.com/questions/16656651/does-java-have-a-clamp-function>
+	public static double clamp(double n, double min, double max) { return Math.max(min, Math.min(max, n)); }
+	
 	public enum LINE_TYPE{ //line types for intersection checking
 		POINT, //the <direction> does not in this case matter
 		SEGMENT, //the segment from <position> to <position> + <direction>
@@ -114,13 +117,16 @@ public class Lis {
 	public static double fromNormAngleToNormAngle(double normalizedFrom, double normalizedTo) { return normalizeAngleShallow(normalizedTo - normalizedFrom); }
 	
 	//unit conversions
-	public static double m2nm(double m) { return m*1e9; }
-	public static double nm2m(double nm) {	 return nm/1e9; }
 	public static double m2cm(double m) { return m*100; }
 	public static double cm2m(double cm) { return cm/100; }
-	public static double m2mm(double m) { return m*1000; }
-	public static double mm2m(double mm) { return mm/1000; }
+	public static double m2mm(double m) { return m*1e3; }
+	public static double mm2m(double mm) { return mm/1e3; }
+	public static double m2um(double m) { return m*1e6; }
+	public static double um2m(double um) { return um/1e6; }
+	public static double m2nm(double m) { return m*1e9; }
+	public static double nm2m(double nm) {	 return nm/1e9; }
 	
 	public static double d2r(double deg) { return deg*Math.PI/180; }
 	public static double r2d(double rad) { return rad*180/Math.PI; }
+	
 }
