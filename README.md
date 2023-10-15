@@ -1,10 +1,10 @@
 --------------------------------------------------------------
 # Light Interference Simulation User Manual
-IB Internal Assessment
+IB I.A.
 
 --------------------------------------------------------------
 
-To start the GUI program, run Lis.exe
+Download and decompress the zip file under the Build folder and run Lis.exe
 
 Guide for creating a setup and running a simulation:
 
