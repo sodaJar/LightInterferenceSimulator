@@ -12,6 +12,6 @@ public class HitboxSegmentPuppet extends HitboxSegment {
 	
 	@Override
 	public HitboxSegmentPuppet clone() {
-		return new HitboxSegmentPuppet(pos1,pos2,responsive,owner,master);
+		return new HitboxSegmentPuppet(pos1.clone(),pos2.clone(),responsive,owner,master);
 	}
 }

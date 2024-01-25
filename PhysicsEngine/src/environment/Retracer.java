@@ -92,7 +92,7 @@ public class Retracer extends Ray {
 					if (hitbox == withHitbox) { continue; } //don't check with one self
 					Vec intersection1 = Lis.getIntersection(position, position.to(hitbox.pos1), withHitbox.pos1, withHitbox.getDirVec(), Lis.LINE_TYPE.RAY, Lis.LINE_TYPE.SEGMENT);
 					Vec intersection2 = Lis.getIntersection(position, position.to(hitbox.pos2), withHitbox.pos1, withHitbox.getDirVec(), Lis.LINE_TYPE.RAY, Lis.LINE_TYPE.SEGMENT);
-					if (intersection1==null && intersection2==null) { continue; } //if the hitbox doesn't overlap with any other hitbox, don't modify anything
+					if (intersection1==null && intersection2==null) { continue; } //if the hitbox doesn't cover the other hitbox in any way, don't modify anything
 					//then, either pos1 or pos2 is covering another hitbox
 					boolean pos1Covering = (intersection1 == null) ? false : (position.distanceSquaredTo(intersection1)>position.distanceSquaredTo(hitbox.pos1));
 					boolean pos2Covering = (intersection2 == null) ? false : (position.distanceSquaredTo(intersection2)>position.distanceSquaredTo(hitbox.pos2));

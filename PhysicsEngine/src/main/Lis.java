@@ -67,8 +67,10 @@ public class Lis {
 		Vec minMax1 = getLineMinMax1D(pos1.x,dir1.x,line1Type);
 		Vec minMax2 = getLineMinMax1D(pos2.x,dir2.x,line2Type);
 		//check if the intersection point is valid for both ranges with their respective line types
-		if (steep1?(intersection.y<minMax1.x || intersection.y>minMax1.y):(intersection.x<minMax1.x || intersection.x>minMax1.y)) { return null; } //line1 not in range of minMax
-		if (steep2?(intersection.y<minMax2.x || intersection.y>minMax2.y):(intersection.x<minMax2.x || intersection.x>minMax2.y)) { return null; } //line2 not in range of minMax
+		//line1 not in range of minMax
+		if (steep1?(intersection.y<minMax1.x || intersection.y>minMax1.y):(intersection.x<minMax1.x || intersection.x>minMax1.y)) { return null; }
+		//line2 not in range of minMax
+		if (steep2?(intersection.y<minMax2.x || intersection.y>minMax2.y):(intersection.x<minMax2.x || intersection.x>minMax2.y)) { return null; }
 		return intersection;
 	}
 	public static Vec getLineIntersection(Vec pos1, Vec dir1, Vec pos2, Vec dir2) { //line-line intersection
